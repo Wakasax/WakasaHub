@@ -1,47 +1,16 @@
 local Graphics = {}
 
-function Graphics:ApplyPreset(preset)
+function Graphics:SetQuality(preset)
     local presets = {
-        ["Low"] = {
-            QualityLevel = 1,
-            Shadows = false,
-            Particles = 50,
-            TextureQuality = 1
-        },
-        ["Balanced"] = {
-            QualityLevel = 5,
-            Shadows = true,
-            Particles = 200,
-            TextureQuality = 2
-        },
-        ["High"] = {
-            QualityLevel = 10,
-            Shadows = true,
-            Particles = 500,
-            TextureQuality = 3
-        }
+        Ultra = {Particles = 1000, Shadows = true},
+        High = {Particles = 500, Shadows = true},
+        Medium = {Particles = 200, Shadows = false},
+        Low = {Particles = 50, Shadows = false}
     }
     
-    local settings = presets[preset] or presets["Balanced"]
-    
-    -- Aplica configurações
-    settings().Rendering.QualityLevel = settings.QualityLevel
-    game:GetService("Lighting").GlobalShadows = settings.Shadows
+    local settings = presets[preset] or presets.High
     game:GetService("Workspace").Particles.MaxCount = settings.Particles
-    settings().Rendering.TextureQuality = settings.TextureQuality
-    
-    print(string.format("[Graphics] Preset aplicado: %s", preset))
-end
-
-function Graphics:UnlockFPS(enabled)
-    if enabled then
-        if setfpscap then
-            setfpscap(360)
-            print("[Graphics] FPS desbloqueado (360 max)")
-        else
-            warn("[Graphics] Função setfpscap não disponível")
-        end
-    end
+    game:GetService("Lighting").GlobalShadows = settings.Shadows
 end
 
 return Graphics

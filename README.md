@@ -1,2 +1,0 @@
-# WakasaHub
-segredo

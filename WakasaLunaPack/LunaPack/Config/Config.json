@@ -1,0 +1,8 @@
+{
+    "UnlockFPS": true,
+    "TargetFPS": 144,
+    "GraphicsPreset": "Balanced",
+    "AutoClean": false,
+    "Theme": "Dark",
+    "Notifications": true
+}

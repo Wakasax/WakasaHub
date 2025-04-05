@@ -85,120 +85,157 @@ if game.PlaceId == 7215881810 then
     })
 end
 
--- WakasaHub Aimbot Mobile para Arsenal
-if game.PlaceId == 286090429 then -- ID do Arsenal
-    -- Carrega a OrionLib corretamente
-    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-    
-    -- Cria a janela principal
+-- WakasaHub Aimbot Mobile - Versão Estável
+if game.PlaceId == 286090429 then -- Arsenal
+    -- Carregamento seguro da OrionLib
+    local OrionLib
+    local function LoadOrion()
+        local success, err = pcall(function()
+            OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+        end)
+        if not success then
+            warn("Erro ao carregar OrionLib: "..tostring(err))
+            return false
+        end
+        return true
+    end
+
+    if not LoadOrion() then return end
+
+    -- Janela principal (idêntica ao original)
     local Window = OrionLib:MakeWindow({
         Name = "WakasaHub Mobile",
         HidePremium = false,
-        SaveConfig = true,
-        ConfigFolder = "WakasaArsenalConfig",
+        SaveConfig = false, -- Desativado para evitar erros
+        ConfigFolder = "WakasaAimbot",
         IntroEnabled = false
     })
 
     -- Serviços essenciais
     local Players = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local UserInputService = game:GetService("UserInputService")
     local LocalPlayer = Players.LocalPlayer
     local Camera = workspace.CurrentCamera
 
-    -- Configurações padrão
+    -- Configurações à prova de erros
     local Settings = {
         Enabled = false,
         TeamCheck = true,
         AimPart = "Head",
-        FOV = 120,
+        FOV = 100,
         Smoothness = 0.25,
-        AutoFire = false,
-        DrawFOV = true,
-        FOVColor = Color3.fromRGB(255, 0, 0),
-        TouchArea = 0.2
+        DrawFOV = false, -- Melhor para mobile
+        FOVColor = Color3.fromRGB(255, 0, 0)
     }
 
-    -- Criação do FOV Circle
-    local FOVCircle = Drawing.new("Circle")
-    FOVCircle.Visible = Settings.DrawFOV
-    FOVCircle.Thickness = 2
-    FOVCircle.Color = Settings.FOVColor
-    FOVCircle.Transparency = 0.5
-    FOVCircle.Filled = false
-    FOVCircle.Radius = Settings.FOV
-    FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-
-    -- Funções principais
-    local function IsValidPlayer(player)
-        return player ~= LocalPlayer and 
-               player.Character and 
-               player.Character:FindFirstChild("Humanoid") and 
-               player.Character.Humanoid.Health > 0 and
-               player.Character:FindFirstChild(Settings.AimPart) and
-               (not Settings.TeamCheck or player.Team ~= LocalPlayer.Team)
+    -- Inicialização segura do FOV
+    local FOVCircle
+    local function InitFOV()
+        local success, err = pcall(function()
+            FOVCircle = Drawing.new("Circle")
+            FOVCircle.Visible = Settings.DrawFOV
+            FOVCircle.Thickness = 2
+            FOVCircle.Color = Settings.FOVColor
+            FOVCircle.Transparency = 0.5
+            FOVCircle.Filled = false
+            FOVCircle.Radius = Settings.FOV
+            FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+            return true
+        end)
+        if not success then
+            warn("Erro no FOV Circle: "..tostring(err))
+            Settings.DrawFOV = false
+            return false
+        end
+        return true
     end
 
-    local function GetClosestPlayer()
-        local closestDistance = Settings.FOV
-        local closestPlayer = nil
+    InitFOV() -- Chama a inicialização
+
+    -- Funções protegidas
+    local function SafeIsValid(player)
+        if not player or player == LocalPlayer then return false end
+        local success, result = pcall(function()
+            return player.Character and
+                   player.Character:FindFirstChild("Humanoid") and
+                   player.Character.Humanoid.Health > 0 and
+                   player.Character:FindFirstChild(Settings.AimPart) and
+                   (not Settings.TeamCheck or player.Team ~= LocalPlayer.Team)
+        end)
+        return success and result
+    end
+
+    local function SafeGetClosest()
+        local closest, distance = nil, Settings.FOV
+        local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
         
         for _, player in ipairs(Players:GetPlayers()) do
-            if IsValidPlayer(player) then
-                local targetPos = player.Character[Settings.AimPart].Position
-                local screenPos, onScreen = Camera:WorldToViewportPoint(targetPos)
+            if SafeIsValid(player) then
+                local success, screenPos, onScreen = pcall(function()
+                    local pos = player.Character[Settings.AimPart].Position
+                    return Camera:WorldToViewportPoint(pos), true
+                end)
                 
-                if onScreen then
-                    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-                    local targetPos2D = Vector2.new(screenPos.X, screenPos.Y)
-                    local distance = (center - targetPos2D).Magnitude
-                    
-                    if distance < closestDistance then
-                        closestPlayer = player
-                        closestDistance = distance
+                if success and onScreen then
+                    local pos2D = Vector2.new(screenPos.X, screenPos.Y)
+                    local dist = (center - pos2D).Magnitude
+                    if dist < distance then
+                        closest = player
+                        distance = dist
                     end
                 end
             end
         end
-        
-        return closestPlayer
+        return closest
     end
 
-    local function SmoothAim(targetPos)
-        local cameraPos = Camera.CFrame.Position
-        local direction = (targetPos - cameraPos).Unit
-        local currentLook = Camera.CFrame.LookVector
-        local smoothDirection = currentLook:Lerp(direction, Settings.Smoothness)
-        Camera.CFrame = CFrame.new(cameraPos, cameraPos + smoothDirection)
-    end
-
-    -- Loop principal
+    -- Loop principal seguro
     local aimLoop
-    local function StartAimbot()
-        aimLoop = RunService.RenderStepped:Connect(function()
-            if Settings.Enabled then
-                local closestPlayer = GetClosestPlayer()
-                if closestPlayer then
-                    SmoothAim(closestPlayer.Character[Settings.AimPart].Position)
-                end
-            end
-            
-            -- Atualiza FOV
-            FOVCircle.Visible = Settings.DrawFOV
-            FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-            FOVCircle.Radius = Settings.FOV
-            FOVCircle.Color = Settings.FOVColor
-        end)
+    local function SafeAimLoop()
+        if not Settings.Enabled then return end
+        
+        local success, target = pcall(SafeGetClosest)
+        if success and target then
+            pcall(function()
+                local targetPos = target.Character[Settings.AimPart].Position
+                local camPos = Camera.CFrame.Position
+                local dir = (targetPos - camPos).Unit
+                local smoothDir = Camera.CFrame.LookVector:Lerp(dir, Settings.Smoothness)
+                Camera.CFrame = CFrame.new(camPos, camPos + smoothDir)
+            end)
+        end
+        
+        -- Atualização segura do FOV
+        if Settings.DrawFOV and FOVCircle then
+            pcall(function()
+                FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                FOVCircle.Radius = Settings.FOV
+                FOVCircle.Visible = true
+            end)
+        elseif FOVCircle then
+            FOVCircle.Visible = false
+        end
     end
 
-    local function StopAimbot()
-        if aimLoop then
+    -- Controle do Aimbot
+    local function ToggleAimbot(state)
+        Settings.Enabled = state
+        if state then
+            if aimLoop then aimLoop:Disconnect() end
+            aimLoop = RunService.RenderStepped:Connect(SafeAimLoop)
+            OrionLib:MakeNotification({
+                Name = "Aimbot Ativado",
+                Content = "Mirando automaticamente",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        elseif aimLoop then
             aimLoop:Disconnect()
             aimLoop = nil
         end
     end
 
-    -- GUI com Orion
+    -- Interface (idêntica ao original)
     local AimbotTab = Window:MakeTab({
         Name = "Aimbot Mobile",
         Icon = "rbxassetid://4483345998",
@@ -206,19 +243,14 @@ if game.PlaceId == 286090429 then -- ID do Arsenal
     })
 
     AimbotTab:AddSection({
-        Name = "Configurações Principais"
+        Name = "Configurações"
     })
 
     AimbotTab:AddToggle({
         Name = "Ativar Aimbot",
         Default = Settings.Enabled,
         Callback = function(Value)
-            Settings.Enabled = Value
-            if Value then
-                StartAimbot()
-            else
-                StopAimbot()
-            end
+            ToggleAimbot(Value)
         end    
     })
 
@@ -241,7 +273,7 @@ if game.PlaceId == 286090429 then -- ID do Arsenal
     AimbotTab:AddDropdown({
         Name = "Parte do Corpo",
         Default = Settings.AimPart,
-        Options = {"Head", "UpperTorso", "HumanoidRootPart"},
+        Options = {"Head", "UpperTorso"},
         Callback = function(Value)
             Settings.AimPart = Value
         end    
@@ -252,7 +284,6 @@ if game.PlaceId == 286090429 then -- ID do Arsenal
         Min = 50,
         Max = 300,
         Default = Settings.FOV,
-        Color = Color3.fromRGB(255,255,255),
         Increment = 5,
         Callback = function(Value)
             Settings.FOV = Value
@@ -264,31 +295,30 @@ if game.PlaceId == 286090429 then -- ID do Arsenal
         Min = 0.05,
         Max = 0.5,
         Default = Settings.Smoothness,
-        Color = Color3.fromRGB(255,255,255),
         Increment = 0.01,
         Callback = function(Value)
             Settings.Smoothness = Value
         end    
     })
 
-    AimbotTab:AddColorpicker({
-        Name = "Cor do FOV",
-        Default = Settings.FOVColor,
-        Callback = function(Value)
-            Settings.FOVColor = Value
-        end    
-    })
-
-    -- Inicialização
+    -- Notificação inicial
     OrionLib:MakeNotification({
         Name = "WakasaHub Mobile",
-        Content = "Aimbot carregado com sucesso!",
+        Content = "Aimbot configurado com sucesso!",
         Image = "rbxassetid://4483345998",
         Time = 5
     })
 
-    -- Limpeza ao sair
-    game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-        StopAimbot()
-    end)
+    -- Limpeza segura
+    local function Cleanup()
+        if aimLoop then
+            aimLoop:Disconnect()
+        end
+        if FOVCircle then
+            pcall(function() FOVCircle:Remove() end)
+        end
+    end
+
+    game:BindToClose(Cleanup)
+    LocalPlayer.CharacterAdded:Connect(Cleanup)
 end

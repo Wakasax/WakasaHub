@@ -1,200 +1,93 @@
---[[
-  LunaPack Debugger v1.0
-  Sistema completo de logs estilo Krnl para desenvolvimento em Roblox
-  Recursos:
-  - Visual profissional com abas organizadas
-  - Registro de funções com códigos
-  - Histórico de eventos
-  - Controle de logging
-  - Anti-spam inteligente
---]]
+-- Carrega a biblioteca (usando versão alternativa mais estável)
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 
--- Carrega a OrionLib
-local success, OrionLib = pcall(function()
-    return loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
-end)
-
-if not success then
-    warn("Falha ao carregar OrionLib")
-    return
-end
-
--- Configuração principal
+-- Cria a janela principal
 local Window = OrionLib:MakeWindow({
-    Name = "LunaPack Debugger",
-    HidePremium = false,
-    SaveConfig = false,
-    IntroEnabled = false,
-    Icon = "rbxassetid://7734053491"
+    Name = "Function Logger",
+    HidePremium = true,
+    SaveConfig = false
 })
 
 -- Variáveis do sistema
 local logs = {}
-local logCooldowns = {}
-local MAX_LOGS = 30
-local loggingEnabled = true
+local functionHistory = {}
 
--- Função principal de logging
-function AddLog(logType, message, funcCode)
-    if not loggingEnabled then return end
+-- Função principal para registrar logs
+function RegisterFunctionCall(funcName, funcCode, ...)
+    local args = {...}
+    local timestamp = os.date("[%H:%M:%S]")
+    local argString = table.concat(args, ", ") or "sem argumentos"
     
-    -- Anti-spam (2 segundos para logs idênticos)
-    local logKey = logType..message
-    if logCooldowns[logKey] and (os.time() - logCooldowns[logKey] < 2) then
-        return
-    end
-    logCooldowns[logKey] = os.time()
-    
-    -- Formatação do log
-    local timestamp = os.date("%H:%M:%S")
-    local formattedLog = {
-        text = string.format("[%s] %s: %s", timestamp, logType:upper(), message),
-        code = funcCode or "No code available",
-        time = os.time()
+    local logEntry = {
+        text = string.format("%s %s(%s)", timestamp, funcName, argString),
+        code = funcCode
     }
     
-    -- Adiciona ao histórico
-    table.insert(logs, 1, formattedLog)
-    if #logs > MAX_LOGS then
-        table.remove(logs)
-    end
-    
-    -- Atualiza a UI
-    if LogTab then
-        UpdateLogDisplay()
-    end
+    table.insert(logs, 1, logEntry)
+    UpdateLogDisplay()
 end
 
--- Criação das abas
+-- Cria a aba de logs PRIMEIRO
 local LogTab = Window:MakeTab({
-    Name = "Event Logs",
-    Icon = "rbxassetid://7733960981"
+    Name = "Function Logs",
+    Icon = "rbxassetid://7734053491"
 })
 
-local ConfigTab = Window:MakeTab({
-    Name = "Configuration",
-    Icon = "rbxassetid://7733765392"
-})
-
--- Atualiza a exibição de logs
+-- Atualiza a exibição (AGORA FUNCIONANDO)
 function UpdateLogDisplay()
-    if not LogTab then return end
-    
     LogTab:Clear()
     
-    -- Cabeçalho
-    LogTab:AddSection({
-        Name = "LIVE EVENT TRACKING"
-    })
-    
-    -- Último log
+    -- Mostra o último registro
     if #logs > 0 then
+        LogTab:AddSection({
+            Name = "ÚLTIMA FUNÇÃO CHAMADA"
+        })
+        
         LogTab:AddParagraph(logs[1].text, "")
         
-        -- Botão para copiar função
+        -- Botão para copiar código
         LogTab:AddButton({
-            Name = "COPY FUNCTION CODE",
+            Name = "Copiar Função",
             Callback = function()
                 setclipboard(logs[1].code)
                 OrionLib:MakeNotification({
-                    Name = "Code Copied",
-                    Content = "Function copied to clipboard",
+                    Name = "Copiado!",
+                    Content = "Código da função copiado",
                     Time = 2
                 })
             end
         })
-    else
-        LogTab:AddParagraph("No events logged yet...", "")
     end
     
-    -- Histórico
+    -- Mostra histórico
     LogTab:AddSection({
-        Name = "EVENT HISTORY (last 10)"
+        Name = "Histórico (últimas 5 chamadas)"
     })
     
-    for i = 1, math.min(10, #logs) do
+    for i = 1, math.min(5, #logs) do
         LogTab:AddParagraph(logs[i].text, "")
     end
 end
 
--- Configurações
-ConfigTab:AddToggle({
-    Name = "Enable Logging",
-    Default = true,
-    Callback = function(value)
-        loggingEnabled = value
-        AddLog("SYSTEM", value and "Logging enabled" or "Logging disabled")
-    end
-})
-
-ConfigTab:AddSlider({
-    Name = "Max Logs",
-    Min = 10,
-    Max = 100,
-    Default = 30,
-    Color = Color3.fromRGB(255, 170, 0),
-    Increment = 5,
-    Callback = function(value)
-        MAX_LOGS = value
-    end
-})
-
-ConfigTab:AddButton({
-    Name = "Clear All Logs",
-    Callback = function()
-        logs = {}
-        logCooldowns = {}
-        UpdateLogDisplay()
-        AddLog("SYSTEM", "All logs cleared")
-    end
-})
-
--- Debug functions
-local function debugHook(eventType)
+-- Hook para monitorar funções
+function HookFunction(func, funcName)
     return function(...)
-        local args = {...}
-        local debugInfo = debug.getinfo(2)
-        local funcName = debugInfo.name or "anonymous"
-        local source = debugInfo.source:match("[^/]+$") or "unknown"
-        
-        local message = string.format("%s called from %s", funcName, source)
-        local code = string.format("-- Function: %s\nlocal function %s(%s)\n    -- Original code\nend", 
-            funcName, funcName, table.concat(args, ", "))
-        
-        AddLog(eventType, message, code)
+        local funcCode = string.dump(func) and "function() ... end" or tostring(func)
+        RegisterFunctionCall(funcName or "Anonymous", funcCode, ...)
+        return func(...)
     end
 end
 
--- Auto-logging de exemplo
-task.spawn(function()
-    while task.wait(5) do
-        if loggingEnabled then
-            AddLog("DEBUG", "System heartbeat", [[
-                -- Auto-generated keepalive
-                local function systemPulse()
-                    return os.clock()
-                end
-            ]])
-        end
-    end
-end)
+-- Exemplo de uso:
+local function TestFunction(a, b)
+    return a + b
+end
 
--- Inicialização
-AddLog("SYSTEM", "Debugger initialized", [[
-    local LunaPack = {
-        AddLog = function(type, msg, code)
-            -- Main logging function
-        end
-    }
-]])
+-- Aplica o hook
+TestFunction = HookFunction(TestFunction, "TestFunction")
 
+-- Chama a função (isso aparecerá nos logs)
+TestFunction(10, 20)
+
+-- Atualiza a exibição inicial
 UpdateLogDisplay()
-
-return {
-    AddLog = AddLog,
-    ToggleLogging = function(state) loggingEnabled = state end,
-    ClearLogs = function()
-        logs = {}
-        logCooldowns = {}
-    end
-}

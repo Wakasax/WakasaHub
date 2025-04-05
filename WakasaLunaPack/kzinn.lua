@@ -1,68 +1,47 @@
 -- Carrega a OrionLib
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
--- Configuração da janela principal
+-- Configurações principais
 local Window = OrionLib:MakeWindow({
     Name = "LunaPack Dev Logger",
-    HidePremium = true,
-    ConfigFolder = "LunaPackLogs"
+    HidePremium = true
 })
 
 -- Variáveis do sistema
 local logs = {}
-local logCooldowns = {}
-local MAX_LOGS = 50
-local loggingEnabled = true
-local lastFunctionCopied = ""
+local lastCopiedFunction = ""
 
--- Função principal para adicionar logs
-function AddLog(logType, message, functionCode)
-    if not loggingEnabled then return end
-    
-    -- Verifica se o log já foi registrado recentemente
-    local logKey = logType .. message
-    if logCooldowns[logKey] and (os.time() - logCooldowns[logKey] < 2) then
-        return
-    end
-    
-    logCooldowns[logKey] = os.time()
-    
-    -- Formata o log
+-- Função para adicionar logs
+function AddLog(action, message, funcCode)
     local timestamp = os.date("[%H:%M:%S]")
     local logEntry = {
-        text = string.format("%s %s: %s", timestamp, logType:upper(), message),
-        code = functionCode or "N/A"
+        text = string.format("%s %s: %s", timestamp, action, message),
+        code = funcCode or "Nenhum código disponível"
     }
     
-    -- Adiciona ao histórico
     table.insert(logs, 1, logEntry)
-    
-    -- Limita o número de logs
-    if #logs > MAX_LOGS then
-        table.remove(logs, MAX_LOGS + 1)
-    end
-    
-    -- Atualiza a UI
     UpdateLogDisplay()
 end
 
--- Atualiza a exibição dos logs
+-- Atualiza a exibição de logs
 function UpdateLogDisplay()
-    if not Window.CurrentTab or Window.CurrentTab.Name ~= "Logs" then return end
+    if not LogTab then return end
     
-    Window.CurrentTab:Clear()
-    Window.CurrentTab:AddSection({
-        Name = "Histórico de Logs"
-    })
+    LogTab:Clear()
     
-    for i, log in ipairs(logs) do
-        local paragraph = Window.CurrentTab:AddParagraph(log.text, "")
+    -- Mostra o último log em um quadrado destacado
+    if #logs > 0 then
+        LogTab:AddSection({
+            Name = "ÚLTIMO LOG REGISTRADO"
+        })
         
-        Window.CurrentTab:AddButton({
-            Name = "📋 Copiar Código #"..i,
+        LogTab:AddParagraph(logs[1].text, "")
+        
+        LogTab:AddButton({
+            Name = "📋 Copiar Código da Função",
             Callback = function()
-                setclipboard(log.code)
-                lastFunctionCopied = log.code
+                setclipboard(logs[1].code)
+                lastCopiedFunction = logs[1].code
                 OrionLib:MakeNotification({
                     Name = "Código copiado!",
                     Content = "Função copiada para área de transferência",
@@ -71,79 +50,52 @@ function UpdateLogDisplay()
             end
         })
     end
+    
+    -- Mostra histórico (opcional)
+    LogTab:AddSection({
+        Name = "Histórico (últimos 10)"
+    })
+    
+    for i = 1, math.min(10, #logs) do
+        LogTab:AddParagraph(logs[i].text, "")
+    end
 end
 
--- Aba de Configuração
-local ConfigTab = Window:MakeTab({
-    Name = "Configurações",
-    Icon = "rbxassetid://7733765392"
-})
-
-ConfigTab:AddToggle({
-    Name = "Ativar Registro de Logs",
-    Default = true,
-    Callback = function(value)
-        loggingEnabled = value
-        AddLog("SISTEMA", value and "Logs ativados" or "Logs desativados")
-    end
-})
-
-ConfigTab:AddButton({
-    Name = "Limpar Todos os Logs",
-    Callback = function()
-        logs = {}
-        logCooldowns = {}
-        UpdateLogDisplay()
-        AddLog("SISTEMA", "Todos os logs foram limpos")
-    end
-})
-
 -- Aba de Logs
-local LogTab = Window:MakeTab({
+LogTab = Window:MakeTab({
     Name = "Logs",
     Icon = "rbxassetid://7734053491"
 })
 
--- Exemplos de uso com funções reais
-local function CollectOrb(orbName)
-    local funcCode = [[
-        local function CollectOrb(orbName)
-            print("Coletando orb: "..orbName)
-            -- Código de coleta aqui
-        end
-    ]]
-    
-    AddLog("ORB", "Orb coletada: "..orbName, funcCode)
-    -- Código real de coleta aqui
-end
+-- Aba de Controle
+local ControlTab = Window:MakeTab({
+    Name = "Controle"
+})
 
-local function TakeDamage(amount)
-    local funcCode = [[
-        local function TakeDamage(amount)
-            print("Recebeu dano: "..amount)
-            -- Código de dano aqui
-        end
-    ]]
-    
-    AddLog("DANO", "Recebeu "..amount.." de dano", funcCode)
-    -- Código real de dano aqui
-end
+ControlTab:AddToggle({
+    Name = "Ativar Logs Automáticos",
+    Default = true,
+    Callback = function(value)
+        _G.loggingEnabled = value
+        AddLog("SISTEMA", value and "Logs ativados" or "Logs desativados")
+    end
+})
 
--- Inicialização
-UpdateLogDisplay()
-AddLog("SISTEMA", "Logger iniciado com sucesso", "Código de inicialização")
+-- Exemplo de uso:
+AddLog("SISTEMA", "Logger iniciado", [[
+    function AddLog(action, message, funcCode)
+        -- Código da função aqui
+    end
+]])
 
--- Funções de exemplo (simulando eventos)
+-- Simula um evento de jogo
 task.spawn(function()
-    while true do
-        wait(5)
-        CollectOrb("Orb Azul")
-        TakeDamage(10)
+    while wait(3) and _G.loggingEnabled do
+        AddLog("ORB", "Orb Azul coletada", [[
+            local function CollectOrb(color)
+                print("Orb "..color.." coletada!")
+            end
+            CollectOrb("Azul")
+        ]])
     end
 end)
-
--- Retorna a interface para uso externo
-return {
-    AddLog = AddLog,
-    ToggleLogging = function(value) loggingEnabled = value end
-}

@@ -4,77 +4,68 @@ if game.PlaceId == 7215881810 then
 
     -- Cria a janela principal
     local Window = OrionLib:MakeWindow({
-        Name = "WakasaHub - RemoteSpy",
+        Name = "WakasaHub",
         HidePremium = false,
         SaveConfig = true,
-        ConfigFolder = "WakasaSpy",
+        ConfigFolder = "Wakasa",
         IntroEnabled = false
     })
 
     -- Variáveis globais
+    _G.remotespy = false  -- Controle do remote spy
     local logs = {}
-    local MAX_LOGS = 50
     local player = game.Players.LocalPlayer
-    local remoteSpyEnabled = false
 
     -- Função para registrar chamadas remotas
-    local function logRemoteCall(remote, args, callType)
+    local function logRemote(remote, args, callType)
         local timestamp = os.date("[%H:%M:%S]")
-        local remoteName = remote.Name
-        local remotePath = game:GetService("HttpService"):JSONEncode(remote:GetFullName())
-        
         local logEntry = {
-            text = string.format("%s %s: %s (%s)", timestamp, callType:upper(), remoteName, #args > 0 and table.concat(args, ", ") or "sem argumentos"),
-            code = string.format("-- Chamada %s\nlocal args = %s\n%s:%s(unpack(args))", 
-                               callType, 
-                               game:GetService("HttpService"):JSONEncode(args),
-                               remotePath,
-                               callType == "event" and "FireServer" or "InvokeServer"),
-            time = os.time()
+            text = string.format("%s %s: %s (%s)", 
+                               timestamp, 
+                               callType:upper(), 
+                               remote.Name, 
+                               #args > 0 and table.concat(args, ", ") or "sem argumentos"),
+            code = string.format("%s:%s(%s)", 
+                               remote:GetFullName(), 
+                               callType == "event" and "FireServer" or "InvokeServer", 
+                               game:GetService("HttpService"):JSONEncode(args))
         }
         
         table.insert(logs, 1, logEntry)
-        if #logs > MAX_LOGS then
-            table.remove(logs)
-        end
         UpdateLogDisplay()
     end
 
-    -- Hook para RemoteEvents
-    local originalFireServer
-    originalFireServer = hookfunction(Instance.new("RemoteEvent").FireServer, function(self, ...)
-        if remoteSpyEnabled then
-            logRemoteCall(self, {...}, "event")
-        end
-        return originalFireServer(self, ...)
-    end)
-
-    -- Hook para RemoteFunctions
-    local originalInvokeServer
-    originalInvokeServer = hookfunction(Instance.new("RemoteFunction").InvokeServer, function(self, ...)
-        if remoteSpyEnabled then
-            logRemoteCall(self, {...}, "function")
-        end
-        return originalInvokeServer(self, ...)
-    end)
+    -- Sistema de monitoramento de remotes
+    local function monitorRemotes()
+        local originalFire = Instance.new("RemoteEvent").FireServer
+        local originalInvoke = Instance.new("RemoteFunction").InvokeServer
+        
+        hookfunction(originalFire, function(self, ...)
+            if _G.remotespy then
+                logRemote(self, {...}, "event")
+            end
+            return originalFire(self, ...)
+        end)
+        
+        hookfunction(originalInvoke, function(self, ...)
+            if _G.remotespy then
+                logRemote(self, {...}, "function")
+            end
+            return originalInvoke(self, ...)
+        end)
+    end
 
     -- Atualiza a exibição de logs
     local function UpdateLogDisplay()
-        if not LogTab then return end
+        if not RemoteTab then return end
         
-        LogTab:Clear()
+        RemoteTab:Clear()
         
-        -- Mostra o último log
         if #logs > 0 then
-            LogTab:AddSection({
-                Name = "ÚLTIMA CHAMADA REGISTRADA"
-            })
+            RemoteTab:AddParagraph("Última chamada:", logs[1].text)
             
-            LogTab:AddParagraph(logs[1].text, "")
-            
-            -- Botão para copiar código
-            LogTab:AddButton({
-                Name = "📋 Copiar Chamada",
+            RemoteTab:AddButton({
+                Name = "Copiar Código",
                 Callback = function()
                     setclipboard(logs[1].code)
                     OrionLib:MakeNotification({
@@ -85,65 +76,57 @@ if game.PlaceId == 7215881810 then
                 end
             })
         end
-        
-        -- Mostra histórico
-        LogTab:AddSection({
-            Name = string.format("HISTÓRICO (Últimos %d)", math.min(5, #logs))
-        })
-        
-        for i = 1, math.min(5, #logs) do
-            LogTab:AddParagraph(string.format("%d. %s", i, logs[i].text), "")
-        end
     end
 
-    -- Cria a aba de RemoteSpy
-    local LogTab = Window:MakeTab({
+    -- GUI
+    local MainTab = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    local RemoteTab = Window:MakeTab({
         Name = "RemoteSpy",
-        Icon = "rbxassetid://7733960981",
+        Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
 
-    -- Cria a aba de configuração
-    local ConfigTab = Window:MakeTab({
-        Name = "Config",
-        Icon = "rbxassetid://7733765392",
-        PremiumOnly = false
+    MainTab:AddSection({
+        Name = "Remote Spy"
     })
 
-    ConfigTab:AddToggle({
-        Name = "Ativar RemoteSpy",
+    MainTab:AddToggle({
+        Name = "Ativar Remote Spy",
         Default = false,
         Callback = function(Value)
-            remoteSpyEnabled = Value
-            OrionLib:MakeNotification({
-                Name = Value and "RemoteSpy Ativado" or "RemoteSpy Desativado",
-                Content = Value and "Monitorando chamadas remotas..." or "Monitoramento desativado",
-                Time = 3
-            })
-        end
-    })
-
-    ConfigTab:AddButton({
-        Name = "Limpar Logs",
-        Callback = function()
-            logs = {}
-            UpdateLogDisplay()
-            OrionLib:MakeNotification({
-                Name = "Logs Limpos",
-                Content = "Todos os registros foram removidos",
-                Time = 2
-            })
-        end
+            _G.remotespy = Value
+            if Value then
+                OrionLib:MakeNotification({
+                    Name = "RemoteSpy ativado!",
+                    Content = "Monitorando chamadas remotas...",
+                    Image = "rbxassetid://4483345998",
+                    Time = 3
+                })
+                monitorRemotes()
+            else
+                OrionLib:MakeNotification({
+                    Name = "RemoteSpy desativado",
+                    Content = "Parou de monitorar chamadas",
+                    Image = "rbxassetid://4483345998",
+                    Time = 3
+                })
+            end
+        end    
     })
 
     -- Notificação inicial
     OrionLib:MakeNotification({
-        Name = "WakasaHub RemoteSpy carregado!",
-        Content = "Pressione F9 para ver os logs",
+        Name = "WakasaHub carregado!",
+        Content = "RemoteSpy pronto para uso",
         Image = "rbxassetid://4483345998",
         Time = 5
     })
 
-    -- Atualização inicial
+    -- Inicializa o display
     UpdateLogDisplay()
 end

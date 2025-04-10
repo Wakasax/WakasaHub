@@ -24,6 +24,7 @@ local MainTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+-- Funções dos botões
 MainTab:AddButton({
     Name = "Comprar Todas as Luvas",
     Callback = function()

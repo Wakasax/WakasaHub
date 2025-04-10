@@ -1,38 +1,56 @@
-local Orium = loadstring(game:HttpGet('https://raw.githubusercontent.com/RunDTM/Orium/main/source.lua'))()
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source.lua'))()
 
 getgenv().LunaHub = {
     Config = {
         GameID = 4058282580,
         HubName = "Luna Hub",
         Developer = "kzinnX",
-        Version = "1.1"  -- Atualizei a versão
+        Version = "1.1"
     }
 }
 
 if game.PlaceId ~= LunaHub.Config.GameID then return end
 
-local Window = Orium.CreateWindow({
-    Title = LunaHub.Config.HubName .. " | v" .. LunaHub.Config.Version,
-    Size = UDim2.new(0, 600, 0, 500)  -- Aumentei o tamanho do painel
+local Window = OrionLib:MakeWindow({
+    Name = LunaHub.Config.HubName .. " | v" .. LunaHub.Config.Version,
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "LunaHubConfig"
 })
 
-local MainTab = Window.AddTab("Principal")
+local MainTab = Window:MakeTab({
+    Name = "Principal",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-MainTab.AddButton("Comprar Todas as Luvas", function()
-    game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
-end)
+MainTab:AddButton({
+    Name = "Comprar Todas as Luvas",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
+    end
+})
 
-MainTab.AddButton("Comprar Todo o DNA", function()
-    game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
-end)
+MainTab:AddButton({
+    Name = "Comprar Todo o DNA",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
+    end
+})
 
-MainTab.AddButton("Vender Força", function()
-    game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
-end)
+MainTab:AddButton({
+    Name = "Vender Força",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
+    end
+})
 
-MainTab.AddButton("Resetar Stats", function()
-    game:GetService("ReplicatedStorage").Events.ResetStats:FireServer()  -- Função para resetar stats
-end)
+MainTab:AddButton({
+    Name = "Resetar Stats",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Events.ResetStats:FireServer()
+    end
+})
 
 -- Inicializa a UI
-Orium.Init()
+OrionLib:Init()

@@ -1,8 +1,8 @@
+-- Carregar a biblioteca Fluent e as funções de gerenciamento
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- Criar a janela principal do hub
+-- Criar a janela principal do hub com suporte para dispositivos móveis
 local Window = Fluent:CreateWindow({
     Title = "Luna Hub",
     SubTitle = "by Kzinn",
@@ -10,11 +10,12 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(600, 480),
     Acrylic = true,
     Theme = "Dark",
+    Mobile = true,  -- Habilitar suporte mobile
     MinimizeKey = Enum.KeyCode.LeftControl, -- Configura a tecla de minimizar
     CloseKey = Enum.KeyCode.LeftAlt -- Tecla de fechar a janela
 })
 
--- Criar as abas
+-- Criar as abas do hub
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
     Eggs = Window:AddTab({ Title = "Eggs", Icon = "egg" }),

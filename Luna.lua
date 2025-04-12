@@ -30,8 +30,10 @@ if game.PlaceId == 91927205587272 then
         Name = "Auto-Click",
         Default = false,
         Callback = function(Value)
-            autoclick()
-            wait(0.1)
+            _G.attack = Value
+            if Value then
+                task.spawn(autoclick)
+            end
         end    
     })
 

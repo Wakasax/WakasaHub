@@ -1,55 +1,43 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+if game.PlaceId == 91927205587272 then
 
-local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 40, 0, 40)
-toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Image = "rbxassetid://106596759054976"
-toggleButton.BackgroundTransparency = 1
-toggleButton.ZIndex = 999 -- Garante que fique por cima
-toggleButton.Parent = game:GetService("CoreGui")
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-local isOpen = true
-local window = Window -- Usa o objeto do Fluent
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "KzinnX", IntroEnable == false})
 
-toggleButton.MouseButton1Click:Connect(function()
-    isOpen = not isOpen
-    window:SetVisible(isOpen)
-end)
+    --valor
+    _G.attack = false 
 
-local Window = Fluent:CreateWindow({
-    Title = "Luna Hub",
-    SubTitle = "By KzinnX",
-    TabWidth = 100,
-    Size = UDim2.fromOffset(430, 300), --tamanho da UI
-    Acrylic = false,
-    Theme = "Amethyst",
-    MinimizeKey = Enum.KeyCode.LeftControl
-})
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Luna", Icon = "rbxassetid://18831448204" }),
-    Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
-}
-Window:Luna(1)
+    --function
+    function autoclick()
+        while _G.attack == true do
+            game:GetService("ReplicatedStorage"):FindFirstChild("\206\184\206\182\206\184\206\183\207\157\205\177\206\181\207\157\206\180"):FindFirstChild("\208\131\210\144\208\147\208\130\208\145\208\130\208\130\208\148\208\130\208\130"):FireServer(unpack(args))
 
-local attack = Tabs.Luna:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
-
-attack:OnChanged(function()
-    while attack.Value do
-        wait(0.1)
-
-        game:GetService("ReplicatedStorage"):FindFirstChild("\206\184\206\182\206\184\206\183\207\157\205\177\206\181\207\157\206\180"):FindFirstChild("\208\131\210\144\208\147\208\130\208\145\208\130\208\130\208\148\208\130\208\130"):FireServer(unpack(args))
+            wait(0.1)
+        end        
     end
-end)
+
+    local Luna = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://106596759054976",
+        PremiumOnly = false
+    })
+
+    local Luna = Tab:AddSection({
+	Name = "Luna"
+    })
+
+    Luna:AddToggle({
+        Name = "Auto-Click",
+        Default = false,
+        Callback = function(Value)
+            autoclick()
+            wait(0.1)
+        end    
+    })
 
 
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("FluentScriptHub")
-SaveManager:SetFolder("FluentScriptHub/specific-game")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
+
+
+
+end    

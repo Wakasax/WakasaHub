@@ -1,127 +1,132 @@
--- Carregar a biblioteca Fluent e addons
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+if game.PlaceId == 76764413804358 then
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
--- Criar a janela principal
-local Window = Fluent:CreateWindow({
-    Title = "Luna Hub",
-    SubTitle = "By Kzinn",
-    TabWidth = 120,
-    Size = UDim2.fromOffset(480, 320),
-    Acrylic = false,
-    Theme = "Amethyst",
-    MinimizeKey = Enum.KeyCode.LeftControl,  -- Tecla para minimizar
-    MinimizeIcon = "rbxassetid://90892367670466"  -- Ícone do quadradinho de minimizar
-})
+    local Window = Fluent:CreateWindow({
+        Title = "Luna Hub | Bubble Gum Simulator: INFINITY",
+        SubTitle = "by Kzinn",
+        TabWidth = 120,
+        Size = UDim2.fromOffset(500, 350),
+        Acrylic = false,
+        Theme = "Amethyst",
+        MinimizeKey = Enum.KeyCode.LeftControl
+    })
 
--- Adicionar abas
-local Tabs = {
-    Main = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://18831448204" }),
-    Pets = Window:AddTab({ Title = "Pets", Icon = "rbxassetid://18319394996" }),
-    TP = Window:AddTab({ Title = "TP", Icon = "rbxassetid://18319245617" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://18319394996" }),
-}
+    local Tabs = {
+        Farm = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://18354794798" }),
+        Pets = Window:AddTab({ Title = "Pets", Icon = "rbxassetid://18354795539" }),
+        Eggs = Window:AddTab({ Title = "Eggs", Icon = "rbxassetid://18354796142" }),
+        Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://18319394996" })
+    }
 
-Window:SelectTab(1)  -- Selecionar a aba "Farm"
+    Window:SelectTab(1)
 
--- Obter PlaceId para determinar o jogo
-local placeId = game.PlaceId
-
------------------------------
--- 📦 Boxing (4058282580)
------------------------------
-if placeId == 4058282580 then
-    -- Toggles para Auto-Farm
-    local AutoFarm = Tabs.Main:AddToggle("auto_farm", { Title = "Auto Farm", Default = false })
-    local AutoSell = Tabs.Main:AddToggle("auto_sell", { Title = "Auto Sell", Default = false })
-    local AutoGlove = Tabs.Main:AddToggle("auto_glove", { Title = "Auto Luva", Default = false })
-    local AutoDNA = Tabs.Main:AddToggle("auto_dna", { Title = "Auto DNA", Default = false })
-
-    AutoFarm:OnChanged(function(bool)
-        while AutoFarm.Value do
-            pcall(function()
-                game:GetService("ReplicatedStorage").Events.Attack:FireServer()
-            end)
-            task.wait(0.15)
+    -- Farm
+    local blowing = Tabs.Farm:AddToggle("Blow", { Title = "Auto Blow", Default = false })
+    blowing:OnChanged(function()
+        while blowing.Value do
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9):FireServer({ "BlowBubble" })
+            task.wait()
         end
     end)
 
-    AutoSell:OnChanged(function(bool)
-        while AutoSell.Value do
-            pcall(function()
-                game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
-            end)
+    local selling = Tabs.Farm:AddToggle("Sell", { Title = "Auto Sell", Default = false })
+    selling:OnChanged(function()
+        while selling.Value do
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9):FireServer({ "SellBubble", "Sell" })
             task.wait(1)
         end
     end)
 
-    AutoGlove:OnChanged(function(bool)
-        while AutoGlove.Value do
-            pcall(function()
-                game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
+    local flying = Tabs.Farm:AddToggle("Fly", { Title = "Enable Fly", Default = false })
+    local flySpeed = Tabs.Farm:AddSlider("FlySpeed", {
+        Title = "Fly Speed",
+        Description = "Controla a velocidade do fly",
+        Default = 100,
+        Min = 50,
+        Max = 300
+    })
+
+    local UIS = game:GetService("UserInputService")
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local root = char:WaitForChild("HumanoidRootPart")
+    local flyingNow = false
+    local flyConn
+
+    flying:OnChanged(function(state)
+        if state then
+            flyingNow = true
+            flyConn = game:GetService("RunService").RenderStepped:Connect(function()
+                if UIS:IsKeyDown(Enum.KeyCode.Space) then
+                    root.Velocity = Vector3.new(0, flySpeed.Value, 0)
+                end
             end)
-            task.wait(1.5)
+        else
+            flyingNow = false
+            if flyConn then flyConn:Disconnect() end
         end
     end)
 
-    AutoDNA:OnChanged(function(bool)
-        while AutoDNA.Value do
-            pcall(function()
-                game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
-            end)
-            task.wait(1.5)
+    -- Pets
+    Tabs.Pets:AddButton({
+        Title = "Equipar Melhores Pets",
+        Description = "Usa o melhor conjunto de pets disponível",
+        Callback = function()
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9):FireServer({ "EquipBest" })
         end
-    end)
+    })
 
------------------------------
--- 🌟 Rebirth Champions Ultimate (74260430392611)
------------------------------
-elseif placeId == 74260430392611 then
-    -- Obter o KnitService para o jogo "Rebirth Champions: Ultimate"
-    local Knit = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit")
-    local Services = Knit:WaitForChild("Services")
+    -- Eggs
+    local currentEggs = {}
 
-    -- Função para obter o Remote
-    local function GetRemote(serviceIndex, remoteIndex)
-        return Services:GetChildren()[serviceIndex]:WaitForChild("RE"):GetChildren()[remoteIndex]
+    local function findNearbyEggs()
+        currentEggs = {}
+        for _, egg in ipairs(workspace:GetDescendants()) do
+            if egg:IsA("Model") and egg:FindFirstChild("Egg") then
+                table.insert(currentEggs, egg.Name)
+            end
+        end
     end
 
-    -- Toggle para AutoClick
-    local AutoClick = Tabs.Main:AddToggle("auto_click", { Title = "Auto Click", Default = false })
+    findNearbyEggs()
 
-    AutoClick:OnChanged(function(bool)
-        while AutoClick.Value do
-            pcall(function()
-                local args = { "Farm", 1 }
-                GetRemote(23, 3):FireServer(unpack(args))  -- Envia o comando de farm
-            end)
-            task.wait(0.1)
+    local eggDropdown = Tabs.Eggs:AddDropdown("EggList", {
+        Title = "Selecionar Ovo",
+        Values = currentEggs,
+        Multi = false
+    })
+
+    Tabs.Eggs:AddButton({
+        Title = "🔄 Atualizar Lista de Ovos",
+        Description = "Busca novamente os ovos próximos",
+        Callback = function()
+            findNearbyEggs()
+            eggDropdown:SetValues(currentEggs)
         end
-    end)
+    })
 
-    -- Toggle para Auto Egg
-    local AutoEgg = Tabs.Pets:AddToggle("auto_egg", { Title = "Auto Egg", Default = false })
-
-    AutoEgg:OnChanged(function(bool)
-        while AutoEgg.Value do
-            pcall(function()
-                local args = {}
-                GetRemote(22, 3):FireServer(unpack(args))  -- Envia o comando de egg
-            end)
-            task.wait(1)
+    Tabs.Eggs:AddButton({
+        Title = "🐣 Abrir Ovo Selecionado (Instantâneo)",
+        Callback = function()
+            local selected = eggDropdown.Value
+            if selected then
+                for _ = 1, 100 do
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9):FireServer({ "OpenEgg", selected })
+                    task.wait()
+                end
+            end
         end
-    end)
+    })
+
+    -- SaveManager
+    SaveManager:SetLibrary(Fluent)
+    InterfaceManager:SetLibrary(Fluent)
+    SaveManager:IgnoreThemeSettings()
+    SaveManager:SetIgnoreIndexes({})
+    InterfaceManager:SetFolder("LunaHub")
+    SaveManager:SetFolder("LunaHub/BubbleGumInfinity")
+    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+    SaveManager:BuildConfigSection(Tabs.Settings)
 end
-
------------------------------
--- ⚙️ Configurações do Fluent
------------------------------
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("LunaHub")
-SaveManager:SetFolder("LunaHub/Configs")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)

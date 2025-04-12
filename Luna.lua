@@ -14,9 +14,10 @@ if game.PlaceId == 76764413804358 then
         Acrylic = false,
         Theme = "Amethyst",
         MinimizeKey = Enum.KeyCode.LeftControl,
-        MinimizeIcon = "rbxassetid://90892367670466"  -- Ícone de minimizar
+        MinimizeIcon = "rbxassetid://90892367670466",  -- Ícone de minimizar
     })
 
+    -- Criando as tabs
     local Tabs = {
         Farm = Window:AddTab({ Title = "• Farm", Icon = "rbxassetid://4483345998" }),
         Pets = Window:AddTab({ Title = "• Pets", Icon = "rbxassetid://6031763426" }),
@@ -32,11 +33,12 @@ if game.PlaceId == 76764413804358 then
     _G.AutoEquipBest = false
     _G.FlyEnabled = false
     _G.FlySpeed = 100
+    _G.FlyDirection = Vector3.zero
 
     -- Remotes
     local RemoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9)
 
-    -- Funções
+    -- Funções para ação
     function _G.DoAutoBlow()
         while _G.AutoBlow do
             pcall(function()
@@ -64,43 +66,51 @@ if game.PlaceId == 76764413804358 then
         end
     end
 
+    -- Fly Function
     function _G.EnableFly()
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         local humanoidRoot = char:WaitForChild("HumanoidRootPart")
 
+        -- Criando o BodyVelocity para o Fly
         local bodyVel = Instance.new("BodyVelocity")
         bodyVel.Velocity = Vector3.zero
         bodyVel.MaxForce = Vector3.new(1, 1, 1) * 1e5
         bodyVel.Name = "Luna_Fly"
         bodyVel.Parent = humanoidRoot
 
+        -- Função para movimentação com WASD
         local uis = game:GetService("UserInputService")
-        local flyDirection = Vector3.zero
 
-        local inputConn = uis.InputBegan:Connect(function(input, gpe)
+        local inputConn
+        inputConn = uis.InputBegan:Connect(function(input, gpe)
             if gpe then return end
-            if input.KeyCode == Enum.KeyCode.W then flyDirection = Vector3.new(0, 0, -1) end
-            if input.KeyCode == Enum.KeyCode.S then flyDirection = Vector3.new(0, 0, 1) end
-            if input.KeyCode == Enum.KeyCode.A then flyDirection = Vector3.new(-1, 0, 0) end
-            if input.KeyCode == Enum.KeyCode.D then flyDirection = Vector3.new(1, 0, 0) end
+            if input.KeyCode == Enum.KeyCode.W then _G.FlyDirection = Vector3.new(0, 0, -1) end
+            if input.KeyCode == Enum.KeyCode.S then _G.FlyDirection = Vector3.new(0, 0, 1) end
+            if input.KeyCode == Enum.KeyCode.A then _G.FlyDirection = Vector3.new(-1, 0, 0) end
+            if input.KeyCode == Enum.KeyCode.D then _G.FlyDirection = Vector3.new(1, 0, 0) end
         end)
 
-        local stopConn = uis.InputEnded:Connect(function(input)
-            flyDirection = Vector3.zero
+        local stopConn
+        stopConn = uis.InputEnded:Connect(function(input)
+            if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
+                _G.FlyDirection = Vector3.zero
+            end
         end)
 
+        -- Atualizando a velocidade do voo
         while _G.FlyEnabled and bodyVel.Parent do
-            bodyVel.Velocity = (humanoidRoot.CFrame:VectorToWorldSpace(flyDirection)) * _G.FlySpeed
-            task.wait()
+            bodyVel.Velocity = (humanoidRoot.CFrame:VectorToWorldSpace(_G.FlyDirection)) * _G.FlySpeed
+            task.wait(0.1)
         end
 
+        -- Desconectando os eventos de entrada
         inputConn:Disconnect()
         stopConn:Disconnect()
         bodyVel:Destroy()
     end
 
-    -- Tabs
+    -- Abas de funcionalidades
     Tabs.Farm:AddToggle("AutoBlow", { Title = "Soprar sem Delay", Default = false }):OnChanged(function(v)
         _G.AutoBlow = v
         if v then task.spawn(_G.DoAutoBlow) end

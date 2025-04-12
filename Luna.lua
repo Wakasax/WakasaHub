@@ -112,10 +112,10 @@ if game.PlaceId == 74260430392611 then
         game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer(eggId)
     end
 
-    -- Função para duplicar pets
-    local function DuplicatePet()
-        -- Lógica para duplicar o pet
-        game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer(1)
+    -- Função para duplicar pets de acordo com raridade
+    local function DuplicatePetByRarity(rarity)
+        -- Aqui vamos buscar pets com base na raridade e duplicá-los
+        game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer(rarity)
     end
 
     -- Função para resgatar todas as recompensas de tempo
@@ -152,10 +152,11 @@ if game.PlaceId == 74260430392611 then
         Default = false,
         Callback = function(state)
             if state then
-                -- Ativa o duplicador de pets
+                -- Ativa o duplicador de pets baseado na raridade
+                local selectedRarity = "Raro"  -- Exemplo de raridade, você pode fazer isso de forma dinâmica
                 while true do
                     wait(5)  -- Intervalo entre duplicações de pets
-                    DuplicatePet()
+                    DuplicatePetByRarity(selectedRarity)
                 end
             end
         end
@@ -188,30 +189,23 @@ if game.PlaceId == 74260430392611 then
         Name = "Egg Farm"
     })
 
-    -- Exemplo de lista de eggs que você pode atualizar conforme necessário
-    local eggList = {"Egg 1", "Egg 2", "Egg 3"}  -- Aqui você pode adicionar os IDs reais dos ovos
-    
-    -- Dropdown para selecionar um ovo
+    -- Exemplo de lista de raridades de pets
     EggsTab:AddDropdown({
-        Name = "Select Egg",
-        Default = eggList[1],
-        Options = eggList,
-        Callback = function(eggName)
-            print("Selected Egg: " .. eggName)
-            -- Chame a função para abrir o ovo selecionado
-            OpenEgg(eggName)
+        Name = "Escolha a Raridade",
+        Default = "Comum",
+        Options = {"Comum", "Raro", "Épico", "Lendário"},
+        Callback = function(selectedRarity)
+            -- Atualiza a raridade selecionada para o duplicador
+            selectedRarity = selectedRarity
         end
     })
 
-    -- Botão de Refresh para Eggs
+    -- Botão de Refresh
     EggsTab:AddButton({
         Name = "Refresh Eggs",
         Callback = function()
-            -- Lógica para atualizar a lista de Eggs
-            print("Refreshing Eggs List!")
-            -- Você pode atualizar dinamicamente a lista de ovos com base no que o jogo oferece
-            eggList = {"New Egg 1", "New Egg 2", "New Egg 3"}  -- Exemplo de atualização da lista
+            -- Código para fazer a função de "Refresh" nos ovos
+            OpenEgg("id_egg_example")  -- Você pode passar o id correto do ovo aqui
         end
     })
-    
 end

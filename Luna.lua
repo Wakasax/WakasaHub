@@ -56,16 +56,33 @@ if game.PlaceId == 4058282580 then
         Name = "Auto-Farm :D"
     })
     MainTab:AddToggle({
-        Name = "Auto Geral (todas as funções)",
+        Name = "Auto sell",
         Default = false,
         Callback = function(Value)
-            _G.AutoAtk = Value
             _G.AutoSell = Value
-            _G.AutoLuva = Value
+        end    
+    })
+    MainTab:AddToggle({
+        Name = "Auto DNA",
+        Default = false,
+        Callback = function(Value)
             _G.AutoDNA = Value
         end    
     })
-
+    MainTab:AddToggle({
+        Name = "Auto luva",
+        Default = false,
+        Callback = function(Value)
+            _G.AutoLuva = Value
+        end    
+    })
+    MainTab:AddToggle({
+        Name = "Auto força",
+        Default = false,
+        Callback = function(Value)
+            _G.AutoAtk = Value
+        end    
+    })
 
 
 

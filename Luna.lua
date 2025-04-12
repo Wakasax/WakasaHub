@@ -1,90 +1,101 @@
 if game.PlaceId == 4058282580 then
-    
+    local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
 
-    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+    local Window = OrionLib:MakeWindow({
+        Name = "Luna Hub",
+        HidePremium = false,
+        SaveConfig = true,
+        ConfigFolder = "Luna",
+        IntroEnable = false
+    })
 
-    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
+    -- Valores Globais
+    _G.AutoAtk = false
+    _G.AutoSell = false
+    _G.AutoLuva = false
+    _G.AutoDNA = false
 
-    --Valor
-
-    _G.AutoAtk = true
-    _G.AutoSell = true
-    _G.AutoLuva = true
-    _G.AutoDNA = true
-    --function
+    -- Funções
     function AutoAtk()
-        while AutoAtk == true do
+        while _G.AutoAtk do
             game:GetService("ReplicatedStorage").Events.Attack:FireServer()
-            wait(0.1)
+            task.wait(0.1)
         end
-        
     end
 
     function AutoDNA()
-        while AutoDNA == true do
+        while _G.AutoDNA do
             game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
-
-            wait(0.1)
+            task.wait(0.1)
         end
-        
     end
 
     function AutoSell()
-        while AutoSell == true do
+        while _G.AutoSell do
             game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
-            wait(0.1)
+            task.wait(0.1)
         end
-        
     end
 
     function AutoLuva()
-        while AutoLuva == true do
+        while _G.AutoLuva do
             game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
-            wait(0.1)
+            task.wait(0.1)
         end
-        
     end
 
-
-    -- jogador
+    -- GUI Principal
     local MainTab = Window:MakeTab({
         Name = "Main",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
+
     local Section = MainTab:AddSection({
         Name = "Auto-Farm :D"
     })
+
     MainTab:AddToggle({
-        Name = "Auto sell",
+        Name = "Auto Sell",
         Default = false,
         Callback = function(Value)
             _G.AutoSell = Value
-        end    
+            if Value then
+                AutoSell()
+            end
+        end
     })
+
     MainTab:AddToggle({
         Name = "Auto DNA",
         Default = false,
         Callback = function(Value)
             _G.AutoDNA = Value
-        end    
+            if Value then
+                AutoDNA()
+            end
+        end
     })
+
     MainTab:AddToggle({
-        Name = "Auto luva",
+        Name = "Auto Luva",
         Default = false,
         Callback = function(Value)
             _G.AutoLuva = Value
-        end    
+            if Value then
+                AutoLuva()
+            end
+        end
     })
+
     MainTab:AddToggle({
-        Name = "Auto força",
+        Name = "Auto Força",
         Default = false,
         Callback = function(Value)
             _G.AutoAtk = Value
-        end    
+            if Value then
+                AutoAtk()
+            end
+        end
     })
-
-
-
-
 end

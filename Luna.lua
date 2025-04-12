@@ -1,7 +1,9 @@
+-- Carregar a biblioteca Fluent e addons
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+-- Criar a janela principal
 local Window = Fluent:CreateWindow({
     Title = "Luna Hub",
     SubTitle = "By Kzinn",
@@ -9,10 +11,11 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(480, 320),
     Acrylic = false,
     Theme = "Amethyst",
-    MinimizeKey = Enum.KeyCode.LeftControl,
-    MinimizeIcon = "rbxassetid://90892367670466"
+    MinimizeKey = Enum.KeyCode.LeftControl,  -- Tecla para minimizar
+    MinimizeIcon = "rbxassetid://90892367670466"  -- Ícone do quadradinho de minimizar
 })
 
+-- Adicionar abas
 local Tabs = {
     Main = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://18831448204" }),
     Pets = Window:AddTab({ Title = "Pets", Icon = "rbxassetid://18319394996" }),
@@ -20,15 +23,16 @@ local Tabs = {
     Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://18319394996" }),
 }
 
-Window:SelectTab(1)
+Window:SelectTab(1)  -- Selecionar a aba "Farm"
 
--- Game-specific logic
+-- Obter PlaceId para determinar o jogo
 local placeId = game.PlaceId
 
 -----------------------------
 -- 📦 Boxing (4058282580)
 -----------------------------
 if placeId == 4058282580 then
+    -- Toggles para Auto-Farm
     local AutoFarm = Tabs.Main:AddToggle("auto_farm", { Title = "Auto Farm", Default = false })
     local AutoSell = Tabs.Main:AddToggle("auto_sell", { Title = "Auto Sell", Default = false })
     local AutoGlove = Tabs.Main:AddToggle("auto_glove", { Title = "Auto Luva", Default = false })
@@ -74,32 +78,36 @@ if placeId == 4058282580 then
 -- 🌟 Rebirth Champions Ultimate (74260430392611)
 -----------------------------
 elseif placeId == 74260430392611 then
+    -- Obter o KnitService para o jogo "Rebirth Champions: Ultimate"
     local Knit = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit")
     local Services = Knit:WaitForChild("Services")
 
+    -- Função para obter o Remote
     local function GetRemote(serviceIndex, remoteIndex)
         return Services:GetChildren()[serviceIndex]:WaitForChild("RE"):GetChildren()[remoteIndex]
     end
 
+    -- Toggle para AutoClick
     local AutoClick = Tabs.Main:AddToggle("auto_click", { Title = "Auto Click", Default = false })
 
     AutoClick:OnChanged(function(bool)
         while AutoClick.Value do
             pcall(function()
                 local args = { "Farm", 1 }
-                GetRemote(23, 3):FireServer(unpack(args))
+                GetRemote(23, 3):FireServer(unpack(args))  -- Envia o comando de farm
             end)
             task.wait(0.1)
         end
     end)
 
+    -- Toggle para Auto Egg
     local AutoEgg = Tabs.Pets:AddToggle("auto_egg", { Title = "Auto Egg", Default = false })
 
     AutoEgg:OnChanged(function(bool)
         while AutoEgg.Value do
             pcall(function()
                 local args = {}
-                GetRemote(22, 3):FireServer(unpack(args))
+                GetRemote(22, 3):FireServer(unpack(args))  -- Envia o comando de egg
             end)
             task.wait(1)
         end
@@ -107,7 +115,7 @@ elseif placeId == 74260430392611 then
 end
 
 -----------------------------
--- ⚙️ Configurações
+-- ⚙️ Configurações do Fluent
 -----------------------------
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)

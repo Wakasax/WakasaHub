@@ -1,57 +1,76 @@
-local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source.lua'))()
+if game.PlaceId == 4058282580 then
+    
 
-getgenv().LunaHub = {
-    Config = {
-        GameID = 4058282580,
-        HubName = "Luna Hub",
-        Developer = "kzinnX",
-        Version = "1.1"
-    }
-}
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-if game.PlaceId ~= LunaHub.Config.GameID then return end
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
 
-local Window = OrionLib:MakeWindow({
-    Name = LunaHub.Config.HubName .. " | v" .. LunaHub.Config.Version,
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "LunaHubConfig"
-})
+    --Valor
 
-local MainTab = Window:MakeTab({
-    Name = "Principal",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
--- Funções dos botões
-MainTab:AddButton({
-    Name = "Comprar Todas as Luvas",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
+    _G.AutoAtk = true
+    _G.AutoSell = true
+    _G.AutoLuva = true
+    _G.AutoDNA = true
+    --function
+    function AutoAtk()
+        while AutoAtk == true do
+            game:GetService("ReplicatedStorage")
+            .Events.Attack:FireServer()
+            wait(0.1)
+        end
+        
     end
-})
 
-MainTab:AddButton({
-    Name = "Comprar Todo o DNA",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
+    function AutoDNA()
+        while AutoDNA == true do
+            game:GetService("ReplicatedStorage")
+            .Events.BuyAllDNA:FireServer()
+            wait(0.1)
+        end
+        
     end
-})
 
-MainTab:AddButton({
-    Name = "Vender Força",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
+    function AutoSell()
+        while AutoSell == true do
+            game:GetService("ReplicatedStorage")
+            .Events.SellRequest:FireServer()
+            wait(0.1)
+        end
+        
     end
-})
 
-MainTab:AddButton({
-    Name = "Resetar Stats",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Events.ResetStats:FireServer()
+    function AutoLuva()
+        while AutoLuva == true do
+            game:GetService("ReplicatedStorage")
+            .Events.BuyAllGlove:FireServer()
+            wait(0.1)
+        end
+        
     end
-})
 
--- Inicializa a UI
-OrionLib:Init()
+
+    -- jogador
+    local MainTab = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    local Section = MainTab:AddSection({
+        Name = "Auto-Farm :D"
+    })
+    MainTab:AddToggle({
+        Name = "Auto Geral (todas as funções)",
+        Default = false,
+        Callback = function(Value)
+            _G.AutoAtk = Value
+            _G.AutoSell = Value
+            _G.AutoLuva = Value
+            _G.AutoDNA = Value
+        end    
+    })
+
+
+
+
+
+end

@@ -101,111 +101,110 @@ if game.PlaceId == 4058282580 then
 end
 
 
-if game.PlaceId == 74260430392611 then
-    -- Rebirth Champions: Ultimate
+--[[
+  Game: Rebirth Champions: Ultimate
+  PlaceId: 74260430392611
+--]]
 
-    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
-    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
+local PlaceId = game.PlaceId
+if PlaceId ~= 74260430392611 then return end
 
-    -- Função para abrir ovos
-    local function OpenEgg(eggId)
-        game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer(eggId)
-    end
+local Knit = game:GetService("ReplicatedStorage").Packages.Knit
+local Services = Knit.Services
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-    -- Função para duplicar pets de acordo com raridade
-    local function DuplicatePetByRarity(rarity)
-        -- Aqui vamos buscar pets com base na raridade e duplicá-los
-        game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer(rarity)
-    end
-
-    -- Função para resgatar todas as recompensas de tempo
-    local function ClaimAllTimeRewards()
-        -- Lógica para resgatar recompensas de tempo
-        game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer("ClaimTimeRewards")
-    end
-
-    -- Aba Auto-Click, Duplicar Pets e Resgatar Recompensas
-    local AutoTab = Window:MakeTab({
-        Name = "Auto",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    })
-
-    -- Auto Clicker
-    AutoTab:AddToggle({
-        Name = "Auto Click",
-        Default = false,
-        Callback = function(state)
-            if state then
-                -- Ativa o Auto Click
-                while true do
-                    wait(0.1)  -- Intervalo entre os cliques
-                    game:GetService("ReplicatedStorage").Packages.Knit.Services[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)].RF[utf8.char(106, 97, 103, 32, 107, 228, 110, 110, 101, 114, 32, 101, 110, 32, 98, 111, 116, 44, 32, 104, 111, 110, 32, 104, 101, 116, 101, 114, 32, 97, 110, 110, 97, 44, 32, 97, 110, 110, 97, 32, 104, 101, 116, 101, 114, 32, 104, 111, 110)]:InvokeServer()
-                end
-            end
-        end
-    })
-
-    -- Auto Pet Duplicator
-    AutoTab:AddToggle({
-        Name = "Auto Duplicate Pet",
-        Default = false,
-        Callback = function(state)
-            if state then
-                -- Ativa o duplicador de pets baseado na raridade
-                local selectedRarity = "Raro"  -- Exemplo de raridade, você pode fazer isso de forma dinâmica
-                while true do
-                    wait(5)  -- Intervalo entre duplicações de pets
-                    DuplicatePetByRarity(selectedRarity)
-                end
-            end
-        end
-    })
-
-    -- Resgatar Recompensas de Tempo
-    AutoTab:AddToggle({
-        Name = "Auto Claim Time Rewards",
-        Default = false,
-        Callback = function(state)
-            if state then
-                -- Ativa o resgate automático de recompensas de tempo
-                while true do
-                    wait(10)  -- Intervalo entre os resgates
-                    ClaimAllTimeRewards()
-                end
-            end
-        end
-    })
-
-    -- Aba Eggs
-    local EggsTab = Window:MakeTab({
-        Name = "Eggs",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    })
-
-    -- Lista de Eggs
-    EggsTab:AddSection({
-        Name = "Egg Farm"
-    })
-
-    -- Exemplo de lista de raridades de pets
-    EggsTab:AddDropdown({
-        Name = "Escolha a Raridade",
-        Default = "Comum",
-        Options = {"Comum", "Raro", "Épico", "Lendário"},
-        Callback = function(selectedRarity)
-            -- Atualiza a raridade selecionada para o duplicador
-            selectedRarity = selectedRarity
-        end
-    })
-
-    -- Botão de Refresh
-    EggsTab:AddButton({
-        Name = "Refresh Eggs",
-        Callback = function()
-            -- Código para fazer a função de "Refresh" nos ovos
-            OpenEgg("id_egg_example")  -- Você pode passar o id correto do ovo aqui
-        end
-    })
+local function decode(str)
+    return utf8.char(table.unpack(str))
 end
+
+local RemotePath = decode({106,97,103,32,107,228,110,110,101,114,32,101,110,32,98,111,116,44,32,104,111,110,32,104,101,116,101,114,32,97,110,110,97,44,32,97,110,110,97,32,104,101,116,101,114,32,104,111,110})
+local RF = Services[RemotePath].RF
+local RE = Services[RemotePath].RE
+
+local active = {
+    AutoClick = false,
+    AutoClaim = false,
+    OpenEgg = false
+}
+
+local selectedRarities = {}
+local selectedEgg = nil
+
+-- UI
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/kzinnui/scripts/main/lib.lua"))()
+local win = lib:CreateWindow("Rebirth Champions: Ultimate")
+
+local farmTab = win:CreateTab("Farm")
+local eggTab = win:CreateTab("Eggs")
+
+-- Funções
+local function autoClick()
+    while active.AutoClick do
+        task.wait()
+        RE[RemotePath]:FireServer("Farm", 1)
+    end
+end
+
+local function autoClaim()
+    while active.AutoClaim do
+        task.wait(1)
+        RF[RemotePath]:InvokeServer(1)
+    end
+end
+
+local function openEgg()
+    while active.OpenEgg do
+        task.wait(2)
+        if selectedEgg and selectedEgg ~= "" then
+            RE[RemotePath]:FireServer({selectedEgg})
+        end
+    end
+end
+
+-- Refresh ovos
+local function getEggs()
+    local eggs = {}
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Egg") then
+            table.insert(eggs, v.Name)
+        end
+    end
+    return eggs
+end
+
+-- Interface
+farmTab:AddToggle("Auto Click", false, function(v)
+    active.AutoClick = v
+    if v then autoClick() end
+end)
+
+farmTab:AddToggle("Auto Claim Rewards", false, function(v)
+    active.AutoClaim = v
+    if v then autoClaim() end
+end)
+
+eggTab:AddButton("Refresh Eggs", function()
+    eggTab:ClearDropdowns("Egg List")
+    local eggs = getEggs()
+    eggTab:AddDropdown("Egg List", eggs, function(v)
+        selectedEgg = v
+    end)
+end)
+
+eggTab:AddToggle("Open Egg", false, function(v)
+    active.OpenEgg = v
+    if v then openEgg() end
+end)
+
+eggTab:AddLabel("Dupe Pets by Rarity:")
+local rarities = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"}
+for _, rarity in ipairs(rarities) do
+    eggTab:AddToggle(rarity, false, function(v)
+        selectedRarities[rarity] = v
+    end)
+end
+
+-- Sistema de duplicação (teórico)
+RE[RemotePath]:FireServer("EquipBest")

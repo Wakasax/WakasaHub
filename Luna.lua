@@ -12,9 +12,10 @@ local Window = Fluent:CreateWindow({
     Theme = "Amethyst",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
+
 local Tabs = {
     Main = Window:AddTab({ Title = "Luna", Icon = "rbxassetid://18831448204" }),
-    Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
+    Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://106596759054976" })
 }
 Window:Luna(1)
 

@@ -1,35 +1,41 @@
-if game.PlaceId == 4058282580 then
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+local Window = Fluent:CreateWindow({
+    Title = "Luna Hub",
+    SubTitle = "By Kzinn",
+    TabWidth = 120,
+    Size = UDim2.fromOffset(480, 320),
+    Acrylic = false,
+    Theme = "Amethyst",
+    MinimizeKey = Enum.KeyCode.LeftControl,
+    MinimizeIcon = "rbxassetid://90892367670466"
+})
 
-    local Window = Fluent:CreateWindow({
-        Title = "Luna Hub | Boxing 🥊",
-        SubTitle = "By Kzinn",
-        TabWidth = 100,
-        Size = UDim2.fromOffset(480, 320),
-        Acrylic = false,
-        Theme = "Amethyst",
-        MinimizeKey = Enum.KeyCode.LeftControl
-    })
+local Tabs = {
+    Main = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://18831448204" }),
+    Pets = Window:AddTab({ Title = "Pets", Icon = "rbxassetid://18319394996" }),
+    TP = Window:AddTab({ Title = "TP", Icon = "rbxassetid://18319245617" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://18319394996" }),
+}
 
-    local Tabs = {
-        Farm = Window:AddTab({ Title = "• Farm", Icon = "rbxassetid://18391040132" }),
-        TP = Window:AddTab({ Title = "• TP", Icon = "rbxassetid://18330539921" }),
-        Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" }),
-    }
+Window:SelectTab(1)
 
-    Window:SelectTab(1)
+-- Game-specific logic
+local placeId = game.PlaceId
 
-    -- // FARM: Auto Ataque (repete remote Attack)
-    local autoFarm = Tabs.Farm:AddToggle("AutoFarm", {
-        Title = "Auto Ataque",
-        Default = false
-    })
+-----------------------------
+-- 📦 Boxing (4058282580)
+-----------------------------
+if placeId == 4058282580 then
+    local AutoFarm = Tabs.Main:AddToggle("auto_farm", { Title = "Auto Farm", Default = false })
+    local AutoSell = Tabs.Main:AddToggle("auto_sell", { Title = "Auto Sell", Default = false })
+    local AutoGlove = Tabs.Main:AddToggle("auto_glove", { Title = "Auto Luva", Default = false })
+    local AutoDNA = Tabs.Main:AddToggle("auto_dna", { Title = "Auto DNA", Default = false })
 
-    autoFarm:OnChanged(function(state)
-        while state and autoFarm.Value do
+    AutoFarm:OnChanged(function(bool)
+        while AutoFarm.Value do
             pcall(function()
                 game:GetService("ReplicatedStorage").Events.Attack:FireServer()
             end)
@@ -37,89 +43,77 @@ if game.PlaceId == 4058282580 then
         end
     end)
 
-    -- // FARM: Auto Sell
-    local autoSell = Tabs.Farm:AddToggle("AutoSell", {
-        Title = "Auto Vender",
-        Default = false
-    })
-
-    autoSell:OnChanged(function(state)
-        while state and autoSell.Value do
+    AutoSell:OnChanged(function(bool)
+        while AutoSell.Value do
             pcall(function()
                 game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
             end)
-            task.wait(0.75)
+            task.wait(1)
         end
     end)
 
-    -- // FARM: Auto Glove
-    local autoGlove = Tabs.Farm:AddToggle("AutoLuva", {
-        Title = "Auto Luva",
-        Default = false
-    })
-
-    autoGlove:OnChanged(function(state)
-        while state and autoGlove.Value do
+    AutoGlove:OnChanged(function(bool)
+        while AutoGlove.Value do
             pcall(function()
                 game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
             end)
-            task.wait(1)
+            task.wait(1.5)
         end
     end)
 
-    -- // FARM: Auto DNA
-    local autoDNA = Tabs.Farm:AddToggle("AutoDNA", {
-        Title = "Auto DNA",
-        Default = false
-    })
-
-    autoDNA:OnChanged(function(state)
-        while state and autoDNA.Value do
+    AutoDNA:OnChanged(function(bool)
+        while AutoDNA.Value do
             pcall(function()
                 game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
+            end)
+            task.wait(1.5)
+        end
+    end)
+
+-----------------------------
+-- 🌟 Rebirth Champions Ultimate (74260430392611)
+-----------------------------
+elseif placeId == 74260430392611 then
+    local Knit = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit")
+    local Services = Knit:WaitForChild("Services")
+
+    local function GetRemote(serviceIndex, remoteIndex)
+        return Services:GetChildren()[serviceIndex]:WaitForChild("RE"):GetChildren()[remoteIndex]
+    end
+
+    local AutoClick = Tabs.Main:AddToggle("auto_click", { Title = "Auto Click", Default = false })
+
+    AutoClick:OnChanged(function(bool)
+        while AutoClick.Value do
+            pcall(function()
+                local args = { "Farm", 1 }
+                GetRemote(23, 3):FireServer(unpack(args))
+            end)
+            task.wait(0.1)
+        end
+    end)
+
+    local AutoEgg = Tabs.Pets:AddToggle("auto_egg", { Title = "Auto Egg", Default = false })
+
+    AutoEgg:OnChanged(function(bool)
+        while AutoEgg.Value do
+            pcall(function()
+                local args = {}
+                GetRemote(22, 3):FireServer(unpack(args))
             end)
             task.wait(1)
         end
     end)
-
-    -- // TP: Coins (usando TweenEvent)
-    Tabs.TP:AddButton({
-        Title = "Pegar Moeda [Coin]",
-        Description = "Teleporta pra moeda usando Tween",
-        Callback = function()
-            local coin = workspace:WaitForChild("Coins", 9e9):GetChildren()[11]:WaitForChild("Decoration", 9e9)
-
-            local args = {
-                [1] = coin,
-                [2] = {
-                    [1] = 0.5,
-                    [2] = Enum.EasingStyle.Quad,
-                    [3] = Enum.EasingDirection.Out,
-                    [4] = 0,
-                    [5] = false,
-                    [6] = 0,
-                },
-                [3] = {
-                    ["Transparency"] = 1,
-                },
-            }
-
-            firesignal(game:GetService("ReplicatedStorage")
-                :WaitForChild("Modules", 9e9)
-                :WaitForChild("ReplicatedTweening", 9e9)
-                :WaitForChild("TweenEvent", 9e9)
-                .OnClientEvent, unpack(args))
-        end
-    })
-
-    -- // Settings (Fluent padrão)
-    SaveManager:SetLibrary(Fluent)
-    InterfaceManager:SetLibrary(Fluent)
-    SaveManager:IgnoreThemeSettings()
-    SaveManager:SetIgnoreIndexes({})
-    InterfaceManager:SetFolder("LunaHub")
-    SaveManager:SetFolder("LunaHub/Boxing")
-    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-    SaveManager:BuildConfigSection(Tabs.Settings)
-
 end
+
+-----------------------------
+-- ⚙️ Configurações
+-----------------------------
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("LunaHub")
+SaveManager:SetFolder("LunaHub/Configs")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)

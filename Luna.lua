@@ -19,7 +19,13 @@ if game.PlaceId == 4058282580 then
     function AutoAtk()
         while _G.AutoAtk do
             pcall(function()
-                game:GetService("ReplicatedStorage").Events.Attack:FireServer()
+                local playerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+                if playerGui then
+                    local trainBtn = playerGui:FindFirstChild("TrainButton", true)
+                    if trainBtn and (trainBtn:IsA("ImageButton") or trainBtn:IsA("TextButton")) then
+                        trainBtn:Activate()
+                    end
+                end
             end)
             task.wait(0.1)
         end

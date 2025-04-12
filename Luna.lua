@@ -27,18 +27,18 @@ if game.PlaceId == 76764413804358 then
 
     Window:SelectTab(1)
 
-    -- Variáveis
+    -- Funções globais (declaradas corretamente)
     _G.AutoBlow = false
     _G.AutoSell = false
     _G.AutoEquipBest = false
     _G.FlyEnabled = false
-    _G.FlySpeed = 200
+    _G.FlySpeed = 100
     _G.FlyDirection = Vector3.zero
 
     -- Remotes
     local RemoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent", 9e9)
 
-    -- Funções para ação
+    -- Funções para ação (agora usando as variáveis globais corretamente)
     function _G.DoAutoBlow()
         while _G.AutoBlow do
             pcall(function()
@@ -66,7 +66,7 @@ if game.PlaceId == 76764413804358 then
         end
     end
 
-    -- Fly Function
+    -- Função do Fly (agora usando as variáveis globais corretamente)
     function _G.EnableFly()
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()

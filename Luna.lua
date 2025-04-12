@@ -13,12 +13,12 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 local Tabs = {
-    Main = Window:AddTab({ Title = "• Main", Icon = "rbxassetid://18831448204" }),
+    Main = Window:AddTab({ Title = "Luna", Icon = "rbxassetid://18831448204" }),
     Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://106596759054976" })
 }
-Window:SelectTab(1)
+Window:Luna(1)
 
-local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
+local attack = Tabs.Luna:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
 
 attack:OnChanged(function()
     while attack.Value do

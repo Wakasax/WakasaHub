@@ -14,8 +14,7 @@ if game.PlaceId == 4058282580 then
     --function
     function AutoAtk()
         while AutoAtk == true do
-            game:GetService("ReplicatedStorage")
-            .Events.Attack:FireServer()
+            game:GetService("ReplicatedStorage").Events.Attack:FireServer()
             wait(0.1)
         end
         
@@ -23,8 +22,8 @@ if game.PlaceId == 4058282580 then
 
     function AutoDNA()
         while AutoDNA == true do
-            game:GetService("ReplicatedStorage")
-            .Events.BuyAllDNA:FireServer()
+            game:GetService("ReplicatedStorage").Events.BuyAllDNA:FireServer()
+
             wait(0.1)
         end
         
@@ -32,8 +31,7 @@ if game.PlaceId == 4058282580 then
 
     function AutoSell()
         while AutoSell == true do
-            game:GetService("ReplicatedStorage")
-            .Events.SellRequest:FireServer()
+            game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
             wait(0.1)
         end
         
@@ -41,8 +39,7 @@ if game.PlaceId == 4058282580 then
 
     function AutoLuva()
         while AutoLuva == true do
-            game:GetService("ReplicatedStorage")
-            .Events.BuyAllGlove:FireServer()
+            game:GetService("ReplicatedStorage").Events.BuyAllGlove:FireServer()
             wait(0.1)
         end
         

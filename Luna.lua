@@ -2,21 +2,21 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-local button = Instance.new("ImageButton")
-button.Size = UDim2.new(0, 40, 0, 40)
-button.Position = UDim2.new(0, 10, 0, 10)
-button.Image = "rbxassetid://106596759054976"
-button.BackgroundTransparency = 1
-button.Parent = game:GetService("CoreGui")
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Size = UDim2.new(0, 40, 0, 40)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Image = "rbxassetid://106596759054976"
+toggleButton.BackgroundTransparency = 1
+toggleButton.ZIndex = 999 -- Garante que fique por cima
+toggleButton.Parent = game:GetService("CoreGui")
 
-local isVisible = true
-local window = FluentWindow
+local isOpen = true
+local window = Window -- Usa o objeto do Fluent
 
-button.MouseButton1Click:Connect(function()
-    isVisible = not isVisible
-    window:SetVisible(isVisible)
+toggleButton.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    window:SetVisible(isOpen)
 end)
-
 
 local Window = Fluent:CreateWindow({
     Title = "Luna Hub",

@@ -10,7 +10,7 @@ button.BackgroundTransparency = 1
 button.Parent = game:GetService("CoreGui")
 
 local isVisible = true
-local window =
+local window = FluentWindow
 
 button.MouseButton1Click:Connect(function()
     isVisible = not isVisible

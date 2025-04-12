@@ -32,7 +32,7 @@ if game.PlaceId == 76764413804358 then
     _G.AutoSell = false
     _G.AutoEquipBest = false
     _G.FlyEnabled = false
-    _G.FlySpeed = 100
+    _G.FlySpeed = 200
     _G.FlyDirection = Vector3.zero
 
     -- Remotes

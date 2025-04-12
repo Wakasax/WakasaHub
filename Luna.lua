@@ -103,87 +103,75 @@ end
 if game.PlaceId == 14732650387 then
 
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub | Rebirth Champions", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
 
-    local Window = OrionLib:MakeWindow({Name = "Luna Hub | Champions", HidePremium = false, SaveConfig = true, ConfigFolder = "LunaChampions", IntroEnable = false})
-
-    -- Valores
+    -- valores
     _G.AutoClick = false
     _G.AutoClaim = false
     _G.AutoEgg = false
-    _G.AutoDupe = false
     _G.SelectedEgg = nil
-    _G.DupeRarities = {
-        ["Basic"] = false,
-        ["Rare"] = false,
-        ["Epic"] = false,
-        ["Legendary"] = false,
-        ["Secret"] = false
-    }
+    _G.AutoDupe = false
+    _G.DupeBasic = false
+    _G.DupeRare = false
+    _G.DupeEpic = false
+    _G.DupeLegendary = false
+    _G.DupeSecret = false
 
-    -- Funções
-    function StartAutoClick()
-        spawn(function()
-            while _G.AutoClick do
-                pcall(function()
-                    game:GetService("ReplicatedStorage").Packages.Knit.Services.ClickService.RF.Click:InvokeServer()
-                end)
-                task.wait(0.1)
-            end
-        end)
+    -- funções
+    function AutoClick()
+        while _G.AutoClick do
+            pcall(function()
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.ClickService.RF.Click:InvokeServer()
+            end)
+            wait(0.1)
+        end
     end
 
-    function StartAutoClaim()
-        spawn(function()
-            while _G.AutoClaim do
-                pcall(function()
-                    for i = 1,10 do
-                        game:GetService("ReplicatedStorage").Packages.Knit.Services.RewardService.RF.Claim:InvokeServer(i)
-                        wait(0.1)
-                    end
-                end)
-                wait(30)
-            end
-        end)
+    function AutoClaim()
+        while _G.AutoClaim do
+            pcall(function()
+                for i = 1,10 do
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.RewardService.RF.Claim:InvokeServer(i)
+                    wait(0.1)
+                end
+            end)
+            wait(30)
+        end
     end
 
-    function StartAutoEgg()
-        spawn(function()
-            while _G.AutoEgg and _G.SelectedEgg do
-                pcall(function()
-                    game:GetService("ReplicatedStorage").Packages.Knit.Services.EggService.RF.Hatch:InvokeServer(_G.SelectedEgg, 1)
-                end)
-                wait(1)
-            end
-        end)
+    function AutoEgg()
+        while _G.AutoEgg and _G.SelectedEgg do
+            pcall(function()
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.EggService.RF.Hatch:InvokeServer(_G.SelectedEgg, 1)
+            end)
+            wait(1)
+        end
     end
 
-    function StartAutoDupe()
-        spawn(function()
-            while _G.AutoDupe do
-                pcall(function()
-                    local pets = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main").Pets:GetChildren()
-                    for _,v in pairs(pets) do
-                        if v:IsA("Frame") and _G.DupeRarities[v:FindFirstChild("Rarity").Text] then
-                            game:GetService("ReplicatedStorage").Packages.Knit.Services.PetService.RF.Dupe:InvokeServer(v.Name)
+    function AutoDupe()
+        while _G.AutoDupe do
+            pcall(function()
+                local pets = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main").Pets:GetChildren()
+                for _,v in pairs(pets) do
+                    if v:IsA("Frame") then
+                        local rarity = v:FindFirstChild("Rarity") and v.Rarity.Text
+                        if rarity then
+                            if (rarity == "Basic" and _G.DupeBasic) or
+                               (rarity == "Rare" and _G.DupeRare) or
+                               (rarity == "Epic" and _G.DupeEpic) or
+                               (rarity == "Legendary" and _G.DupeLegendary) or
+                               (rarity == "Secret" and _G.DupeSecret) then
+                                game:GetService("ReplicatedStorage").Packages.Knit.Services.PetService.RF.Dupe:InvokeServer(v.Name)
+                            end
                         end
                     end
-                end)
-                wait(5)
-            end
-        end)
-    end
-
-    function RefreshEggList(dropdown)
-        local eggs = {}
-        for _,v in pairs(game:GetService("Workspace").Eggs:GetChildren()) do
-            if v:IsA("Model") then
-                table.insert(eggs, v.Name)
-            end
+                end
+            end)
+            wait(5)
         end
-        dropdown:Refresh(eggs, true)
     end
 
-    -- Aba Main
+    -- aba main
     local MainTab = Window:MakeTab({
         Name = "Main",
         Icon = "rbxassetid://4483345998",
@@ -193,77 +181,81 @@ if game.PlaceId == 14732650387 then
     MainTab:AddToggle({
         Name = "Auto Click",
         Default = false,
-        Callback = function(v)
-            _G.AutoClick = v
-            if v then StartAutoClick() end
+        Callback = function(Value)
+            _G.AutoClick = Value
+            if Value then
+                AutoClick()
+            end
         end
     })
 
     MainTab:AddToggle({
-        Name = "Auto Claim Rewards",
+        Name = "Auto Claim Recompensas",
         Default = false,
-        Callback = function(v)
-            _G.AutoClaim = v
-            if v then StartAutoClaim() end
+        Callback = function(Value)
+            _G.AutoClaim = Value
+            if Value then
+                AutoClaim()
+            end
         end
     })
 
-    -- Aba Eggs
+    -- aba eggs
     local EggsTab = Window:MakeTab({
         Name = "Eggs",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
 
-    local eggDropdown = EggsTab:AddDropdown({
-        Name = "Select Egg",
-        Default = "",
-        Options = {},
-        Callback = function(v)
-            _G.SelectedEgg = v
+    local eggList = {}
+    for _,v in pairs(game:GetService("Workspace").Eggs:GetChildren()) do
+        if v:IsA("Model") then
+            table.insert(eggList, v.Name)
         end
-    })
+    end
 
-    EggsTab:AddButton({
-        Name = "Refresh Egg List",
-        Callback = function()
-            RefreshEggList(eggDropdown)
+    EggsTab:AddDropdown({
+        Name = "Selecionar Ovo",
+        Default = "",
+        Options = eggList,
+        Callback = function(Value)
+            _G.SelectedEgg = Value
         end
     })
 
     EggsTab:AddToggle({
-        Name = "Auto Open Egg",
+        Name = "Auto Abrir Ovo",
         Default = false,
-        Callback = function(v)
-            _G.AutoEgg = v
-            if v then StartAutoEgg() end
+        Callback = function(Value)
+            _G.AutoEgg = Value
+            if Value then
+                AutoEgg()
+            end
         end
     })
 
-    -- Aba Dupe
+    -- aba dupe
     local DupeTab = Window:MakeTab({
-        Name = "Dupe Pets",
+        Name = "Dupe",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
 
     DupeTab:AddToggle({
-        Name = "Auto Dupe Pets",
+        Name = "Auto Dupe",
         Default = false,
-        Callback = function(v)
-            _G.AutoDupe = v
-            if v then StartAutoDupe() end
+        Callback = function(Value)
+            _G.AutoDupe = Value
+            if Value then
+                AutoDupe()
+            end
         end
     })
 
-    for rarity,_ in pairs(_G.DupeRarities) do
-        DupeTab:AddToggle({
-            Name = "Dupe " .. rarity,
-            Default = false,
-            Callback = function(v)
-                _G.DupeRarities[rarity] = v
-            end
-        })
-    end
+    DupeTab:AddToggle({Name = "Dupe Basic", Default = false, Callback = function(v) _G.DupeBasic = v end})
+    DupeTab:AddToggle({Name = "Dupe Rare", Default = false, Callback = function(v) _G.DupeRare = v end})
+    DupeTab:AddToggle({Name = "Dupe Epic", Default = false, Callback = function(v) _G.DupeEpic = v end})
+    DupeTab:AddToggle({Name = "Dupe Legendary", Default = false, Callback = function(v) _G.DupeLegendary = v end})
+    DupeTab:AddToggle({Name = "Dupe Secret", Default = false, Callback = function(v) _G.DupeSecret = v end})
 
 end

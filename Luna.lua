@@ -2,6 +2,21 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+local button = Instance.new("ImageButton")
+button.Size = UDim2.new(0, 40, 0, 40)
+button.Position = UDim2.new(0, 10, 0, 10)
+button.Image = "rbxassetid://106596759054976"
+button.BackgroundTransparency = 1
+button.Parent = game:GetService("CoreGui")
+
+local isVisible = true
+local window = -- referencia para sua UI principal aqui
+
+button.MouseButton1Click:Connect(function()
+    isVisible = not isVisible
+    window:SetVisible(isVisible)
+end)
+
 
 local Window = Fluent:CreateWindow({
     Title = "Luna Hub",

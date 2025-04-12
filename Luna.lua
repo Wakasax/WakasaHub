@@ -14,7 +14,7 @@ if game.PlaceId == 76764413804358 then
         Acrylic = false,
         Theme = "Amethyst",
         MinimizeKey = Enum.KeyCode.LeftControl,
-        MinimizeIcon = "rbxassetid://90892367670466"
+        MinimizeIcon = "rbxassetid://90892367670466"  -- Ícone de minimizar
     })
 
     local Tabs = {

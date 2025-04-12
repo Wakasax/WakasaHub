@@ -16,7 +16,7 @@ local Tabs = {
     Main = Window:AddTab({ Title = "• Main", Icon = "rbxassetid://18831448204" }),
     Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
 }
-Window:Main(1)
+Window:SelectTab(1)
 
 local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
 

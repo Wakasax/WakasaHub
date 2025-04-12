@@ -22,9 +22,8 @@ if game.PlaceId == 91927205587272 then
         Icon = "rbxassetid://106596759054976",
         PremiumOnly = false
     })
-
-    local Luna = Tab:AddSection({
-	Name = "Luna"
+    local Section = Luna:AddSection({
+        Name = "Auto Farm :D"
     })
 
     Luna:AddToggle({

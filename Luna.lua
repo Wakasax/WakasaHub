@@ -155,34 +155,34 @@ if game.PlaceId == 286090429 then
         Title = "Luna Hub - Aimbot",
         SubTitle = "by kzinnx",
         TabWidth = 160,
-        Size = UDim2.fromOffset(490, 400),
+        Size = UDim2.fromOffset(500, 420),
         Acrylic = true,
         Theme = "Purple",
         MinimizeKey = Enum.KeyCode.RightControl
     })
 
-    local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
+    local AimbotTab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
 
     local AimbotEnabled = false
-    local FOV = 100
+    local FOV = 150
 
-    Tab:AddToggle("Aimbot", {
-        Title = "Ativar Aimbot",
+    AimbotTab:AddToggle("AimbotToggle", {
+        Title = "Aimbot",
         Default = false,
-        Callback = function(value)
-            AimbotEnabled = value
+        Callback = function(val)
+            AimbotEnabled = val
         end
     })
 
-    Tab:AddSlider("FOVSlider", {
+    AimbotTab:AddSlider("FOVSlider", {
         Title = "FOV",
-        Description = "so nao xita ate o talo",
-        Default = 100,
+        Description = "sem xitar igual um doido",
+        Default = 150,
         Min = 50,
         Max = 300,
         Rounding = 0,
-        Callback = function(value)
-            FOV = value
+        Callback = function(val)
+            FOV = val
         end
     })
 
@@ -193,22 +193,19 @@ if game.PlaceId == 286090429 then
     local LocalPlayer = Players.LocalPlayer
     local Camera = workspace.CurrentCamera
 
-    local function getClosestPlayer()
-        local closest, shortest = nil, FOV
+    local function GetClosestEnemy()
+        local closest = nil
+        local shortest = FOV
         local mousePos = UserInputService:GetMouseLocation()
 
-        for _, pl in ipairs(Players:GetPlayers()) do
-            if pl ~= LocalPlayer 
-            and pl.Team ~= LocalPlayer.Team
-            and pl.Character 
-            and pl.Character:FindFirstChild("Head") then
-
-                local headPos, onScreen = Camera:WorldToViewportPoint(pl.Character.Head.Position)
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Team ~= LocalPlayer.Team and player.Character and player.Character:FindFirstChild("Head") then
+                local headPos, onScreen = Camera:WorldToViewportPoint(player.Character.Head.Position)
                 if onScreen then
-                    local dist = (Vector2.new(headPos.X, headPos.Y) - mousePos).Magnitude
-                    if dist < shortest then
-                        shortest = dist
-                        closest = pl
+                    local distance = (Vector2.new(headPos.X, headPos.Y) - mousePos).Magnitude
+                    if distance < shortest then
+                        shortest = distance
+                        closest = player
                     end
                 end
             end
@@ -218,23 +215,23 @@ if game.PlaceId == 286090429 then
     end
 
     RunService.RenderStepped:Connect(function()
-        if not AimbotEnabled then return end
-
-        local target = getClosestPlayer()
-        if target and target.Character and target.Character:FindFirstChild("Head") then
-            local head = target.Character.Head.Position
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
+        if AimbotEnabled then
+            local target = GetClosestEnemy()
+            if target and target.Character and target.Character:FindFirstChild("Head") then
+                local head = target.Character.Head.Position
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
+            end
         end
     end)
 
-    -- settings do fluent
-    local SettingsTab = Window:AddTab({ Title = "Settings", Icon = "settings" })
+    -- Aba de configurações padrão do Fluent
+    local SettingsTab = Window:AddTab({ Title = "Config", Icon = "settings" })
     SaveManager:SetLibrary(Fluent)
     InterfaceManager:SetLibrary(Fluent)
     SaveManager:IgnoreThemeSettings()
     SaveManager:SetIgnoreIndexes({})
-    InterfaceManager:SetFolder("FluentScriptHub")
-    SaveManager:SetFolder("FluentScriptHub/specific-game")
+    InterfaceManager:SetFolder("LunaHub")
+    SaveManager:SetFolder("LunaHub/aimbot-pro")
     InterfaceManager:BuildInterfaceSection(SettingsTab)
     SaveManager:BuildConfigSection(SettingsTab)
 end

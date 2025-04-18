@@ -89,7 +89,7 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-    local autoClickEnabled = false
+    _G.autoClickEnabled = false
 
     local Window = Fluent:CreateWindow({
         Title = "Luna Hub " .. Fluent.Version,
@@ -108,22 +108,33 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
 
     local attack = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
 
-    attack:OnChanged(function()
-        while autoClickEnabled do
+    attack:OnChanged(function ()
+        _G.autoClickEnabled = value
+        if value then
+            local function startAutoClick()
+                task.spawn(function()
+                    while autoClickEnabled do
+                        pcall(function()
+                            local vim = game:GetService("VirtualInputManager")
+                            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                        end)
+                        task.wait(0.1)
+                    end
+                end)
+            end
             
-        
-            task.spawn(function()
-                while autoClickEnabled do
-                    pcall(function()
-                       local vim = game:GetService("VirtualInputManager")
-                        vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                        vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                    end)
-                    task.wait(1)
-                end
+            Main:OnChanged(function()
+                pcall(function ()
+                    attack()
+                    
+                end)
             end)
+
         end
     end)
+
+   
 
 
 

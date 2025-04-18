@@ -89,26 +89,7 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-    _G.autoClickEnabled = false
-
-    --function
-
-    function attacker()
-        while _G.autoClickEnabled do
-            local function startAutoClick()
-                task.spawn(function()
-                    while autoClickEnabled do
-                        pcall(function()
-                            local vim = game:GetService("VirtualInputManager")
-                            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                        end)
-                        task.wait(0.1)
-                    end
-                end)
-            end
-        end        
-    end    
+    
 
     local Window = Fluent:CreateWindow({
         Title = "Luna Hub " .. Fluent.Version,
@@ -125,13 +106,18 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
         Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
-    local attack = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
+    Main:OnChanged(function()
+        print("Auto soprar:", Options.MyToggle.Value)
+        while attack.Value do
+            wait()
+            local args = {
+                [1] = "BlowBubble"
+            }
 
-    Toggle:OnChanged(function()
-        _G.autoClickEnabled = value
-        if value then
-            task.spawn(attacker)
-        end
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+
+
+        end    
     end)
 
 end

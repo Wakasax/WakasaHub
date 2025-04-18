@@ -97,16 +97,6 @@ local Fluent =
         Theme = "Dark",
         MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
     })
-    Window:SetMinimizeKeybind()
-
-    Window:AddButton({
-        Title = "",
-        Description = "Minimizar",
-        Icon = "rbxassetid://106596759054976",
-        Callback = function()
-            Window:Minimize()
-        end
-    })
 
     local Tabs = {
         Main = Window:AddTab({ Title = "Main", Icon = "rbxassetid://106596759054976" }),

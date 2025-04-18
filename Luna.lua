@@ -83,7 +83,7 @@ Main:AddToggle({
 end
 
 
-if game.PlaceId == 85896571713843 then --bubble gum simulator
+if game.PlaceId == 85896571713843 then
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
@@ -112,6 +112,19 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator
 
             local args = {
                 [1] = "BlowBubble"
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+        end
+    end)
+
+    local sell = Tabs.Main:AddToggle("vender", {Title = "vender", Default = false })
+
+    sell:OnChanged(function()
+        while sell.Value do
+            wait(0.1)
+            local args = {
+                [1] = "SellBubble"
             }
             
             game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))

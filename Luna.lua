@@ -25,42 +25,51 @@ end
 
 
 
-if game.PleaceId == 74260430392611 then
+if game.PlaceId == 74260430392611 then
     
+
 
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-    local Window = OrionLib:MakeWindow({Name = "ghost hub", HidePremium = false, SaveConfig = true, ConfigFolder = "ghost", IntroEnable = false})
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Kzinnx", IntroEnable = false})
 
-    local main = Window:MakeTab({
-        Name = "auto farm",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    })
+local autoClickEnabled = false
 
-    local Section = main:AddSection({
-        Name = "auto farm"
-    })
 
-    local clicking = false
-
-    main:AddToggle({
-        Name = "AutoClick",
-        Default = false,
-        Callback = function(Value)
-        clicking = Value
-
-            task.spawn(function()
-                while clicking do
-                    pcall(function()
-                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                    end)
-
-                    task.wait(0.1)
-                end
+local function startAutoClick()
+    task.spawn(function()
+        while autoClickEnabled do
+            pcall(function()
+                local vim = game:GetService("VirtualInputManager")
+                vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
             end)
+            task.wait(0.1)
         end
+    end)
+end
+
+
+
+
+
+    local Main = Window:MakeTab({
+            Name = "Luna",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
     })
+    local Section = Main:AddSection({
+        Name = "Auto-farm"
+    })
+Main:AddToggle({
+    Name = "AutoClick",
+    Default = false,
+    Callback = function(state)
+        autoClickEnabled = state
+        if autoClickEnabled then
+            startAutoClick()
+        end
+    end
+})
 
 end

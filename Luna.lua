@@ -118,11 +118,12 @@ if game.PlaceId == 85896571713843 then
         end
     end)
 
-    local vender = Tabs.Main:AddToggle("vender", {Title = "", Default = false })
+    local vender = Tabs.Main:AddToggle("vender", {Title = "vender", Default = false })
 
     vender:OnChanged(function()
         while vender.Value do
             wait(0.1)
+            
             local args = {
                 [1] = "SellBubble"
             }

@@ -81,3 +81,53 @@ Main:AddToggle({
 
 
 end
+
+
+if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
+
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+    local autoClickEnabled = false
+
+    local function startAutoClick()
+        task.spawn(function()
+            while autoClickEnabled do
+                pcall(function()
+                    local vim = game:GetService("VirtualInputManager")
+                    vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                    vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                end)
+                task.wait(0.1)
+            end
+        end)
+    end
+
+    local Window = Fluent:CreateWindow({
+        Title = "Luna Hub " .. Fluent.Version,
+        SubTitle = "by Kzinnx",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(580, 460),
+        Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+        Theme = "Dark",
+        MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    })
+
+    local Main = {
+        Main = Window:AddTab({ Title = "Main", Icon = "106596759054976" }),
+        Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+    }
+
+    local Toggle = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
+
+    Toggle:OnChanged(function()
+        startAutoClick()
+    end)
+
+
+
+
+
+
+end

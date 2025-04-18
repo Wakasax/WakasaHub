@@ -147,140 +147,136 @@ end
 
 if game.PlaceId == 286090429 then
 
-    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-    
-    local Window = Fluent:CreateWindow({
-        Title = "Luna Hub - Aimbot",
-        SubTitle = "by kzinnx",
-        TabWidth = 160,
-        Size = UDim2.fromOffset(490, 400),
-        Acrylic = true,
-        Theme = "Purple",
-        MinimizeKey = Enum.KeyCode.RightControl
-    })
-    
-    local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
-    local Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://106596759054976" })
-    
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-    local UIS = game:GetService("UserInputService")
-    local LocalPlayer = Players.LocalPlayer
-    local Camera = workspace.CurrentCamera
-    
-    local AimbotEnabled = false
-    local SilentAimEnabled = false
-    local ExpandHitbox = false
-    local FOV = 150
-    local WallCheck = false
-    
-    Tab:AddToggle("aimbot_toggle", {
-        Title = "Aimbot",
-        Default = false,
-        Callback = function(value) AimbotEnabled = value end
-    })
-    
-    Tab:AddToggle("silentaim_toggle", {
-        Title = "Silent Aim",
-        Default = false,
-        Callback = function(value) SilentAimEnabled = value end
-    })
-    
-    Tab:AddToggle("hitbox_toggle", {
-        Title = "Hitbox Expander",
-        Default = false,
-        Callback = function(value) ExpandHitbox = value end
-    })
-    
-    Tab:AddToggle("wallcheck_toggle", {
-        Title = "Wall Check",
-        Default = false,
-        Callback = function(value) WallCheck = value end
-    })
-    
-    Tab:AddSlider("fov_slider", {
-        Title = "FOV",
-        Default = 150,
-        Min = 50,
-        Max = 300,
-        Rounding = 0,
-        Callback = function(value) FOV = value end
-    })
-    
-    local function getClosestPlayer()
-        local closestPlayer = nil
-        local shortestDistance = FOV
-    
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-                local head = player.Character.Head
-                local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
-    
-                if onScreen then
-                    local mousePos = UIS:GetMouseLocation()
-                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-    
-                    if distance < shortestDistance then
-                        shortestDistance = distance
-                        closestPlayer = player
-                    end
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Luna Hub - Aimbot",
+    SubTitle = "by kzinnx",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(490, 400),
+    Acrylic = true,
+    Theme = "Purple",
+    MinimizeKey = Enum.KeyCode.RightControl
+})
+
+local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
+local Settings = Window:AddTab({ Title = "Settings", Icon = "rbxassetid://106596759054976" })
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local Aimbot = false
+local Silent = false
+local Hitbox = false
+local WallCheck = false
+local FOV = 150
+
+Tab:AddToggle("aimbot", {
+    Title = "Aimbot",
+    Default = false,
+    Callback = function(v) Aimbot = v end
+})
+
+Tab:AddToggle("silent", {
+    Title = "Silent Aim",
+    Default = false,
+    Callback = function(v) Silent = v end
+})
+
+Tab:AddToggle("hitbox", {
+    Title = "Hitbox",
+    Default = false,
+    Callback = function(v) Hitbox = v end
+})
+
+Tab:AddToggle("wallcheck", {
+    Title = "Wall Check",
+    Default = false,
+    Callback = function(v) WallCheck = v end
+})
+
+Tab:AddSlider("fov", {
+    Title = "FOV",
+    Default = 150,
+    Min = 50,
+    Max = 300,
+    Rounding = 0,
+    Callback = function(v) FOV = v end
+})
+
+local function Closest()
+    local closest, dist = nil, FOV
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+            local pos, onScreen = Camera:WorldToViewportPoint(p.Character.Head.Position)
+            if onScreen then
+                local m = UIS:GetMouseLocation()
+                local d = (Vector2.new(pos.X, pos.Y) - m).Magnitude
+                if d < dist then
+                    dist = d
+                    closest = p
                 end
             end
         end
-    
-        return closestPlayer
     end
-    
-    local function silentAim(target)
-        if SilentAimEnabled and target and target.Character and target.Character:FindFirstChild("Head") then
-            local headPos = target.Character.Head.Position
-            return headPos
+    return closest
+end
+
+local function CanSee(pos)
+    if not WallCheck then return true end
+    local ray = Ray.new(Camera.CFrame.Position, (pos - Camera.CFrame.Position).Unit * 1000)
+    local hit = workspace:FindPartOnRay(ray, LocalPlayer.Character)
+    return hit == nil
+end
+
+RunService.RenderStepped:Connect(function()
+    if not Aimbot then return end
+    local t = Closest()
+    if t and t.Character and t.Character:FindFirstChild("Head") then
+        local pos = t.Character.Head.Position
+        if CanSee(pos) then
+            if Hitbox then
+                t.Character.Head.Size = Vector3.new(10, 10, 10)
+                t.Character.Head.Transparency = 0.5
+                t.Character.Head.Material = Enum.Material.Neon
+            end
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, pos)
         end
     end
-    
-    local function expandHitbox(target)
-        if ExpandHitbox and target and target.Character and target.Character:FindFirstChild("Head") then
-            local head = target.Character.Head
-            local expandedPos = head.Position + Vector3.new(0, 0, 0.5) -- Expansão de hitbox
-            return expandedPos
-        end
-    end
-    
-    local function isVisible(target)
-        if WallCheck then
-            local ray = Ray.new(Camera.CFrame.Position, (target.Position - Camera.CFrame.Position).unit * 1000)
-            local hit, position = workspace:FindPartOnRay(ray, LocalPlayer.Character, false, true)
-            return hit == nil
-        end
-        return true
-    end
-    
-    RunService.RenderStepped:Connect(function()
-        if not AimbotEnabled then return end
-    
-        local target = getClosestPlayer()
-        if target then
-            local headPosition = silentAim(target)
-            if headPosition then
-                local expandedHead = expandHitbox(target)
-                if isVisible(target) then
-                    Camera.CFrame = CFrame.new(Camera.CFrame.Position, expandedHead or headPosition)
-                end
+end)
+
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local old = mt.__namecall
+
+mt.__namecall = newcclosure(function(self, ...)
+    local args = {...}
+    local method = getnamecallmethod()
+    if Silent and method == "FireServer" and tostring(self) == "HitPart" then
+        local t = Closest()
+        if t and t.Character and t.Character:FindFirstChild("Head") then
+            if CanSee(t.Character.Head.Position) then
+                args[2] = t.Character.Head
+                args[3] = t.Character.Head.Position
+                return old(self, unpack(args))
             end
         end
-    end)
-    
-    -- Configurações da UI
-    SaveManager:SetLibrary(Fluent)
-    InterfaceManager:SetLibrary(Fluent)
-    SaveManager:IgnoreThemeSettings()
-    SaveManager:SetIgnoreIndexes({})
-    InterfaceManager:SetFolder("FluentScriptHub")
-    SaveManager:SetFolder("FluentScriptHub/specific-game")
-    InterfaceManager:BuildInterfaceSection(Settings)
-    SaveManager:BuildConfigSection(Settings)
-    
     end
-    
+    return old(self, ...)
+end)
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:BuildInterfaceSection(Settings)
+SaveManager:BuildConfigSection(Settings)
+
+end

@@ -147,93 +147,94 @@ end
 
 if game.PlaceId == 286090429 then
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-local Window = Fluent:CreateWindow({
-    Title = "Luna Hub - Aimbot",
-    SubTitle = "by kzinnx",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(490, 400),
-    Acrylic = true,
-    Theme = "Purple",
-    MinimizeKey = Enum.KeyCode.RightControl
-})
+    local Window = Fluent:CreateWindow({
+        Title = "Luna Hub - Aimbot",
+        SubTitle = "by kzinnx",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(490, 400),
+        Acrylic = true,
+        Theme = "Purple",
+        MinimizeKey = Enum.KeyCode.RightControl
+    })
 
-local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
+    local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
 
-local Toggle, AimbotEnabled = false, false
-local FOV = 100
+    local AimbotEnabled = false
+    local FOV = 100
 
-Tab:AddToggle("Aimbot", {
-    Title = "Ativar Aimbot",
-    Default = false,
-    Callback = function(value)
-        AimbotEnabled = value
-    end
-})
+    Tab:AddToggle("Aimbot", {
+        Title = "Ativar Aimbot",
+        Default = false,
+        Callback = function(value)
+            AimbotEnabled = value
+        end
+    })
 
-Tab:AddSlider("FOVSlider", {
-    Title = "FOV",
-    Description = "so nao xita ate o talo",
-    Default = 100,
-    Min = 50,
-    Max = 300,
-    Rounding = 0,
-    Callback = function(value)
-        FOV = value
-    end
-})
+    Tab:AddSlider("FOVSlider", {
+        Title = "FOV",
+        Description = "so nao xita ate o talo",
+        Default = 100,
+        Min = 50,
+        Max = 300,
+        Rounding = 0,
+        Callback = function(value)
+            FOV = value
+        end
+    })
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local UserInputService = game:GetService("UserInputService")
 
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
+    local LocalPlayer = Players.LocalPlayer
+    local Camera = workspace.CurrentCamera
 
-local function getClosestPlayer()
-    local closestPlayer = nil
-    local shortestDistance = FOV
+    local function getClosestPlayer()
+        local closest, shortest = nil, FOV
+        local mousePos = UserInputService:GetMouseLocation()
 
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-            local head = player.Character.Head
-            local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+        for _, pl in ipairs(Players:GetPlayers()) do
+            if pl ~= LocalPlayer 
+            and pl.Team ~= LocalPlayer.Team
+            and pl.Character 
+            and pl.Character:FindFirstChild("Head") then
 
-            if onScreen then
-                local mousePos = UserInputService:GetMouseLocation()
-                local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-
-                if distance < shortestDistance then
-                    shortestDistance = distance
-                    closestPlayer = player
+                local headPos, onScreen = Camera:WorldToViewportPoint(pl.Character.Head.Position)
+                if onScreen then
+                    local dist = (Vector2.new(headPos.X, headPos.Y) - mousePos).Magnitude
+                    if dist < shortest then
+                        shortest = dist
+                        closest = pl
+                    end
                 end
             end
         end
+
+        return closest
     end
 
-    return closestPlayer
-end
+    RunService.RenderStepped:Connect(function()
+        if not AimbotEnabled then return end
 
-RunService.RenderStepped:Connect(function()
-    if not AimbotEnabled then return end
+        local target = getClosestPlayer()
+        if target and target.Character and target.Character:FindFirstChild("Head") then
+            local head = target.Character.Head.Position
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
+        end
+    end)
 
-    local target = getClosestPlayer()
-    if target and target.Character and target.Character:FindFirstChild("Head") then
-        local head = target.Character.Head.Position
-        Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
-    end
-
---settings do fluent
+    -- settings do fluent
+    local SettingsTab = Window:AddTab({ Title = "Settings", Icon = "settings" })
     SaveManager:SetLibrary(Fluent)
     InterfaceManager:SetLibrary(Fluent)
     SaveManager:IgnoreThemeSettings()
     SaveManager:SetIgnoreIndexes({})
     InterfaceManager:SetFolder("FluentScriptHub")
     SaveManager:SetFolder("FluentScriptHub/specific-game")
-    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-    SaveManager:BuildConfigSection(Tabs.Settings)
-end)
+    InterfaceManager:BuildInterfaceSection(SettingsTab)
+    SaveManager:BuildConfigSection(SettingsTab)
 end

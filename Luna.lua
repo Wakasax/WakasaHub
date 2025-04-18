@@ -30,7 +30,7 @@ if game.PleaceId == 74260430392611 then
 
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
+    local Window = OrionLib:MakeWindow({Name = "ghost hub", HidePremium = false, SaveConfig = true, ConfigFolder = "ghost", IntroEnable = false})
 
     local main = Window:MakeTab({
         Name = "auto farm",
@@ -44,23 +44,23 @@ if game.PleaceId == 74260430392611 then
 
     local clicking = false
 
-main:AddToggle({
-    Name = "AutoClick",
-    Default = false,
-    Callback = function(Value)
+    main:AddToggle({
+        Name = "AutoClick",
+        Default = false,
+        Callback = function(Value)
         clicking = Value
 
-        task.spawn(function()
-            while clicking do
-                pcall(function()
-                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                end)
+            task.spawn(function()
+                while clicking do
+                    pcall(function()
+                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                    end)
 
-                task.wait(0.1)
-            end
-        end)
-    end
-})
+                    task.wait(0.1)
+                end
+            end)
+        end
+    })
 
 end

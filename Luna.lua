@@ -91,6 +91,25 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
 
     _G.autoClickEnabled = false
 
+    --function
+
+    function attacker()
+        while _G.autoClickEnabled do
+            local function startAutoClick()
+                task.spawn(function()
+                    while autoClickEnabled do
+                        pcall(function()
+                            local vim = game:GetService("VirtualInputManager")
+                            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                        end)
+                        task.wait(0.1)
+                    end
+                end)
+            end
+        end        
+    end    
+
     local Window = Fluent:CreateWindow({
         Title = "Luna Hub " .. Fluent.Version,
         SubTitle = "by Kzinnx",
@@ -108,37 +127,21 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
 
     local attack = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
 
-    attack:OnChanged(function ()
+    Toggle:OnChanged(function()
         _G.autoClickEnabled = value
         if value then
-            local function startAutoClick()
-                task.spawn(function()
-                    while autoClickEnabled do
-                        pcall(function()
-                            local vim = game:GetService("VirtualInputManager")
-                            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                        end)
-                        task.wait(0.1)
-                    end
-                end)
-            end
-            
-            Main:OnChanged(function()
-                pcall(function ()
-                    attack()
-                    
-                end)
-            end)
-
+            task.spawn(attacker)
         end
     end)
 
-   
-
-
-
-
-
-
 end
+    
+--settings do fluent
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)    

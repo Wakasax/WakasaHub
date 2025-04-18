@@ -145,6 +145,20 @@ if game.PlaceId == 85896571713843 then
 end
 
 
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Luna Hub - Aimbot",
+    SubTitle = "by kzinnx",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(490, 400),
+    Acrylic = true,
+    Theme = "Purple",
+    MinimizeKey = Enum.KeyCode.RightControl
+})
+
 local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
 
 local Toggle, AimbotEnabled = false, false
@@ -209,4 +223,14 @@ RunService.RenderStepped:Connect(function()
         local head = target.Character.Head.Position
         Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
     end
+
+--settings do fluent
+    SaveManager:SetLibrary(Fluent)
+    InterfaceManager:SetLibrary(Fluent)
+    SaveManager:IgnoreThemeSettings()
+    SaveManager:SetIgnoreIndexes({})
+    InterfaceManager:SetFolder("FluentScriptHub")
+    SaveManager:SetFolder("FluentScriptHub/specific-game")
+    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+    SaveManager:BuildConfigSection(Tabs.Settings)
 end)

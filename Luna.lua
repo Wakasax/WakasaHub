@@ -20,11 +20,10 @@ if game.PlaceId == 4058282580 then
     Main:AddToggle({
         Name = "Auto-sell",
         Default = false,
-        Callback = function(Value)
+        pcall = function(Value)
             game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()  
-            wait(1)
+            task.wait(0.1)
 
         end    
     })
-
 end

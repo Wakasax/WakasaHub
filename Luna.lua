@@ -91,19 +91,6 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
 
     local autoClickEnabled = false
 
-    local function startAutoClick()
-        task.spawn(function()
-            while autoClickEnabled do
-                pcall(function()
-                    local vim = game:GetService("VirtualInputManager")
-                    vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                    vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-                end)
-                task.wait(0.1)
-            end
-        end)
-    end
-
     local Window = Fluent:CreateWindow({
         Title = "Luna Hub " .. Fluent.Version,
         SubTitle = "by Kzinnx",
@@ -119,10 +106,23 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
         Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
-    local Toggle = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
+    local attack = Main.Main:AddToggle("auto soprar", {Title = ":D", Default = false })
 
-    Toggle:OnChanged(function()
-        startAutoClick()
+    attack:OnChanged(function()
+        while autoClickEnabled do
+            
+        
+            task.spawn(function()
+                while autoClickEnabled do
+                    pcall(function()
+                       local vim = game:GetService("VirtualInputManager")
+                        vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                        vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                    end)
+                    task.wait(1)
+                end
+            end)
+        end
     end)
 
 

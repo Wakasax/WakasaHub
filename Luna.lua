@@ -1,4 +1,4 @@
-main:AddButton({
+Main:AddButton({
     Name = "Remote Spy",
     Description = "remote spy pa nois",
     Callback = function()

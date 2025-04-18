@@ -1,44 +1,48 @@
-if game.PlaceId == 91927205587272 then
+if game.PlaceId == 4058282580 then
 
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "KzinnX", IntroEnable == false})
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Kzinnx", IntroEnable = false})
 
-    --valor
-    _G.attack = false 
-
+    --variavel
+    _G.AutoSell = false
 
     --function
-    function autoclick()
-        while _G.attack == true do
-            game:GetService("ReplicatedStorage"):FindFirstChild("\206\184\206\182\206\184\206\183\207\157\205\177\206\181\207\157\206\180"):FindFirstChild("\208\131\210\144\208\147\208\130\208\145\208\130\208\130\208\148\208\130\208\130"):FireServer(unpack(args))
+    function AutoSell()
+        while AutoSell.value do
+            game:GetService("ReplicatedStorage").Events.SellRequest:FireServer()
+            task.wait(1)
 
-            wait(0.1)
-        end        
-    end
+        end
 
-    local Luna = Window:MakeTab({
-        Name = "Main",
-        Icon = "rbxassetid://106596759054976",
-        PremiumOnly = false
+    local Main = Window:MakeTab({
+            Name = "Luna",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
     })
-    local Section = Luna:AddSection({
-        Name = "Auto Farm :D"
+    local Main = Tab:AddSection({
+        Name = "Auto-farm"
     })
 
-    Luna:AddToggle({
-        Name = "Auto-Click",
+    Main:AddToggle({
+        Name = "Auto-sell",
         Default = false,
         Callback = function(Value)
-            _G.attack = Value
-            if Value then
-                task.spawn(autoclick)
+            _G.AutoSell(value)
+            if value then
+                task.spawn(AutoSell)
             end
+
         end    
     })
 
 
 
+    end
 
 
-end    
+
+
+
+
+end

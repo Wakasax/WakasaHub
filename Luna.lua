@@ -20,7 +20,7 @@ if game.PlaceId == 4058282580 then
             Icon = "rbxassetid://4483345998",
             PremiumOnly = false
     })
-    local Main = Tab:AddSection({
+    local Section = Main:AddSection({
         Name = "Auto-farm"
     })
 
@@ -39,6 +39,45 @@ if game.PlaceId == 4058282580 then
 
 
     end
+
+
+
+
+
+
+end
+
+
+if game.PlaceId == 85896571713843 then -- bubble gum simulator inf
+
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna"})
+
+    local Main = Window:MakeTab({
+        Name = "Luna",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    local Main = Tab:AddSection({
+        Name = "Auto-farm"
+    })
+
+    Main:AddToggle({
+        Name = "auto soprar",
+        Default = false,
+        Callback = function(Value)
+
+        end
+    })
+    Main:AddToggle({
+        Name = "auto vender",
+        Default = false,
+        Callback = function(Value)
+
+        end
+    })
 
 
 

@@ -83,53 +83,49 @@ Main:AddToggle({
 end
 
 
-if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
-
+if game.PlaceId == 85896571713843 then --bubble gum simulator
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-    
-
     local Window = Fluent:CreateWindow({
-        Title = "Luna Hub " .. Fluent.Version,
+        Title = "Luna Hub ",
         SubTitle = "by Kzinnx",
-        TabWidth = 160,
-        Size = UDim2.fromOffset(580, 460),
-        Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+        TabWidth = 100,
+        Size = UDim2.fromOffset(430, 300),
+        Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
         Theme = "Dark",
         MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
     })
 
-    local Main = {
-        Main = Window:AddTab({ Title = "Main", Icon = "106596759054976" }),
+    local Tabs = {
+        Main = Window:AddTab({ Title = "Main", Icon = "rbxassetid://106596759054976" }),
         Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
+    Window:SelectTab(1)
 
-    local Luna = Main.Main:AddToggle("autoclicker", {Title = "autoclicker", Default = false })
+    local clicker = Tabs.Main:AddToggle("auto clicker", {Title = "auto clicker", Default = false })
 
-    Main:OnChanged(function()
-        print("Auto soprar:", Options.MyToggle.Value)
-        while attack.Value do
-            wait()
+    clicker:OnChanged(function()
+        while clicker.Value do
+            wait(0.1)
+
             local args = {
                 [1] = "BlowBubble"
             }
-
+            
             game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
-
-
-        end    
+        end
     end)
 
-end
-    
 --settings do fluent
-SaveManager:SetLibrary(Fluent)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-SaveManager:SetIgnoreIndexes({})
-InterfaceManager:SetFolder("FluentScriptHub")
-SaveManager:SetFolder("FluentScriptHub/specific-game")
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)    
+    SaveManager:SetLibrary(Fluent)
+    InterfaceManager:SetLibrary(Fluent)
+    SaveManager:IgnoreThemeSettings()
+    SaveManager:SetIgnoreIndexes({})
+    InterfaceManager:SetFolder("FluentScriptHub")
+    SaveManager:SetFolder("FluentScriptHub/specific-game")
+    InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+    SaveManager:BuildConfigSection(Tabs.Settings)
+
+end

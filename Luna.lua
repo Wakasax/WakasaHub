@@ -83,8 +83,8 @@ Main:AddToggle({
 end
 
 
-if game.PlaceId == 85896571713843 then
-    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local Fluent =
+    loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
@@ -96,6 +96,16 @@ if game.PlaceId == 85896571713843 then
         Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
         Theme = "Dark",
         MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    })
+    Window:SetMinimizeKeybind()
+
+    Window:AddButton({
+        Title = "",
+        Description = "Minimizar",
+        Icon = "rbxassetid://106596759054976",
+        Callback = function()
+            Window:Minimize()
+        end
     })
 
     local Tabs = {
@@ -142,5 +152,6 @@ if game.PlaceId == 85896571713843 then
     InterfaceManager:BuildInterfaceSection(Tabs.Settings)
     SaveManager:BuildConfigSection(Tabs.Settings)
 
-end
+
+
 

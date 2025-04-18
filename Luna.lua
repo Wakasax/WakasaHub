@@ -22,3 +22,45 @@ local Section = Main:AddSection({
     end    
 })
 end
+
+
+
+if game.PleaceId == 4058282580 then
+    
+
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+
+    local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Luna", IntroEnable = false})
+
+    local main = Window:MakeTab({
+        Name = "auto farm",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    local Section = main:AddSection({
+        Name = "auto farm"
+    })
+
+    local clicking = false
+
+main:AddToggle({
+    Name = "AutoClick",
+    Default = false,
+    Callback = function(Value)
+        clicking = Value
+
+        task.spawn(function()
+            while clicking do
+                pcall(function()
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                end)
+
+                task.wait(0.1)
+            end
+        end)
+    end
+})
+
+end

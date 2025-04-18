@@ -106,6 +106,8 @@ if game.PlaceId == 85896571713843 then --bubble gum simulator infinity
         Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
+    local Luna = Main.Main:AddToggle("autoclicker", {Title = "autoclicker", Default = false })
+
     Main:OnChanged(function()
         print("Auto soprar:", Options.MyToggle.Value)
         while attack.Value do

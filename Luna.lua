@@ -79,13 +79,5 @@ Main:AddToggle({
     end
 })
 
-Main:AddButton({
-    Name = "Remote Spy",
-    Description = "remote spy pa nois",
-    Callback = function()
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))()
-        end)
-    end
-})
+
 end

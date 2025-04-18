@@ -143,3 +143,70 @@ if game.PlaceId == 85896571713843 then
     SaveManager:BuildConfigSection(Tabs.Settings)
 
 end
+
+
+local Tab = Window:AddTab({ Title = "Aimbot", Icon = "rbxassetid://106596759054976" })
+
+local Toggle, AimbotEnabled = false, false
+local FOV = 100
+
+Tab:AddToggle("Aimbot", {
+    Title = "Ativar Aimbot",
+    Default = false,
+    Callback = function(value)
+        AimbotEnabled = value
+    end
+})
+
+Tab:AddSlider("FOVSlider", {
+    Title = "FOV",
+    Description = "so nao xita ate o talo",
+    Default = 100,
+    Min = 50,
+    Max = 300,
+    Rounding = 0,
+    Callback = function(value)
+        FOV = value
+    end
+})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = FOV
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local head = player.Character.Head
+            local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+
+            if onScreen then
+                local mousePos = UserInputService:GetMouseLocation()
+                local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+RunService.RenderStepped:Connect(function()
+    if not AimbotEnabled then return end
+
+    local target = getClosestPlayer()
+    if target and target.Character and target.Character:FindFirstChild("Head") then
+        local head = target.Character.Head.Position
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, head)
+    end
+end)

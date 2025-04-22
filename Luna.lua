@@ -1,4 +1,116 @@
+-- Carregar a biblioteca Fluent
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
+-- Criar a janela principal da Luna Hub
+local Window = Fluent:CreateWindow({
+    Title = "Luna Hub by KzinnX",
+    SubTitle = "Bubble Gum Simulator INFINITY",
+    TabWidth = 160,
+    Size = UDim2.new(0, 500, 0, 350),
+    Theme = "Dark",
+    Acrylic = true,
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- Criar uma aba
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "home" })
+}
+
+-- Variáveis de controle
+local autoFarm = false
+local autoSell = false
+local autoHatch = false
+local infJump = false
+local player = game.Players.LocalPlayer
+
+-- Função Auto Farm
+local function startAutoFarm()
+    while autoFarm do
+        for _, coin in pairs(workspace.Coins:GetChildren()) do
+            if coin:IsA("BasePart") then
+                player.Character.HumanoidRootPart.CFrame = coin.CFrame
+                wait(0.1)
+            end
+        end
+        game:GetService("ReplicatedStorage").Events.BlowBubble:FireServer()
+        wait(0.5)
+    end
+end
+
+-- Função Auto Sell
+local function startAutoSell()
+    while autoSell do
+        game:GetService("ReplicatedStorage").Events.SellBubble:FireServer()
+        wait(1)
+    end
+end
+
+-- Função Auto Hatch
+local function startAutoHatch()
+    while autoHatch do
+        game:GetService("ReplicatedStorage").Events.HatchEgg:FireServer("BasicEgg", 1)
+        wait(2)
+    end
+end
+
+-- Função Infinite Jump
+local function enableInfJump()
+    local userInput = game:GetService("UserInputService")
+    userInput.JumpRequest:Connect(function()
+        if infJump and player.Character then
+            player.Character.Humanoid:ChangeState("Jumping")
+        end
+    end)
+end
+
+-- Adicionar botões à aba principal usando Fluent
+Tabs.Main:AddButton({
+    Title = "Toggle Auto Farm",
+    Description = "Automatically collect coins and blow bubbles",
+    Callback = function()
+        autoFarm = not autoFarm
+        if autoFarm then spawn(startAutoFarm) end
+        Fluent:Notify({ Title = "Luna Hub", Content = "Auto Farm: " .. (autoFarm and "ON" or "OFF") })
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Toggle Auto Sell",
+    Description = "Automatically sell bubbles",
+    Callback = function()
+        autoSell = not autoSell
+        if autoSell then spawn(startAutoSell) end
+        Fluent:Notify({ Title = "Luna Hub", Content = "Auto Sell: " .. (autoSell and "ON" or "OFF") })
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Toggle Auto Hatch",
+    Description = "Automatically hatch Basic Eggs",
+    Callback = function()
+        autoHatch = not autoHatch
+        if autoHatch then spawn(startAutoHatch) end
+        Fluent:Notify({ Title = "Luna Hub", Content = "Auto Hatch: " .. (autoHatch and "ON" or "OFF") })
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Toggle Infinite Jump",
+    Description = "Jump infinitely in the air",
+    Callback = function()
+        infJump = not infJump
+        if infJump then enableInfJump() end
+        Fluent:Notify({ Title = "Luna Hub", Content = "Infinite Jump: " .. (infJump and "ON" or "OFF") })
+    end
+})
+
+-- Notificação inicial
+Fluent:Notify({
+    Title = "Luna Hub by KzinnX",
+    Content = "Script loaded successfully! Enjoy!",
+    Duration = 5
+})
 
 if game.PlaceId == 4058282580 then
     

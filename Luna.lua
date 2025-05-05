@@ -20,13 +20,14 @@
     }
     Window:SelectTab(1)
 
-    Main:AddToggle({
-        Name = "AutoClick",
-        Default = false,
-        Callback = function(state)
+    local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
+
+    attack:OnChanged(function()
+        while attack.Value do
+            wait(1)
             autoClickEnabled = state
             if autoClickEnabled then
                 startAutoClick()
             end
         end
-    })
+    end)

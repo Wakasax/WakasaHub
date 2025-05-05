@@ -24,27 +24,15 @@
 
     click:OnChanged(function()
         while click.Value do
-           
-            wait(1)
-            game:GetService("ReplicatedStorage"):WaitForChild("\207\155\207\157\206\182\206\183\206\179\206\182\206\182\207\157\206\178"):WaitForChild("\208\147\208\168\208\130\208\131\208\130\208\148\208\168\208\146\208\148\208\150"):FireServer(unpack(args))
-          
+            if state then
+                task.spawn(function()
+                    while Tabs.Main.Toggles.AutoClickToggle.Value do
+                        if ClickRemote then
+                            ClickRemote:FireServer()
+                        end
+                        task.wait(0.1)
+                    end
+                end)
+            end
     end
 end)
-
-Tabs.Main:AddToggle("AutoClick", {
-    Title = "Auto Click",
-    Default = false,
-    Callback = function(state)
-        _G.AutoClick = state
-        if state then
-            task.spawn(function()
-                while _G.AutoClick do
-                    if ClickRemote then
-                        ClickRemote:FireServer()
-                    end
-                    task.wait(0.1)
-                end
-            end)
-        end
-    end
-})

@@ -1,31 +1,39 @@
-if game.PlaceId == 86782616351214 then
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 
-local Window = OrionLib:MakeWindow({Name = "Luna Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "dev wakasa"})
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+    
+    
+    local Window = Fluent:CreateWindow({
+        Title = "Luna Hub",
+        SubTitle = "",
+        TabWidth = 100,
+        Size = UDim2.fromOffset(430, 300), --tamanho da UI
+        Acrylic = false,
+        Theme = "Amethyst",
+        MinimizeKey = Enum.KeyCode.LeftControl
+    })
 
-local Main = Window:MakeTab({
-	Name = "Farm",
-	Icon = "rbxassetid://rbxassetid://106596759054976",
-	PremiumOnly = false
-})
+    local Tabs = {
+        Main = Window:AddTab({ Title = "• Infor", Icon = "rbxassetid://18831448204" }),
+        Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
+    }
+    Window:SelectTab(1)
 
-local Section = Main:AddSection({
-	Name = "finge que tem uma frase foda aqui"
-})
+    local click = Tabs.Main:AddToggle("Auto click", {Title = "Auto click", Default = false})
 
-
-Main:AddToggle({
-	Name = "auto click eu acho testa ai",
-	Default = false,
-	Callback = function(Value)
-        wait(0.5)
-
-        game:GetService("ReplicatedStorage"):WaitForChild("\207\155\207\157\206\182\206\183\206\179\206\182\206\182\207\157\206\178"):WaitForChild("\208\147\208\168\208\130\208\131\208\130\208\148\208\168\208\146\208\148\208\150"):FireServer(unpack(args))
-	end    
-})
-
-
-
-
-
-end
+    click:OnChanged(function()
+        while click.Value do
+           
+            wait(1)
+            
+            local args = {
+                "01010010 01100101 01110000 01101100 01101001 01100011 01100001 01110100 01100101 01100100 01010011 01110100 01101111 01110010 01100001 01100111 01100101 00101110 01010110 01101001 01101110 01101110 01111001 01000110 01110010 01100001 01101101 01100101 01110111 01101111 01110010 01101011 00101110 01001100 01101001 01100010 01110010 01100001 01110010 01111001 00101110 01000011 01101111 01101110 01101110 01100101 01100011 01110100 01101001 01101111 01101110 00101110 01110100 01101000 01110010 01100101 01100001 01100100 01011111 01110011 01100101 01100011 01110101 01110010 01101001 01110100 01111001 00111010 00110001 00001010 01010010 01100101 01110000 01101100 01101001 01100011 01100001 01110100 01100101 01100100 01010011 01110100 01101111 01110010 01100001 01100111 01100101 00101110 01010110 01101001 01101110 01101110 01111001 01000110 01110010 01100001 01101101 01100101 01110111 01101111 01110010 01101011 00101110 01001100 01101001 01100010 01110010 01100001 01110010 01111001 00101110 01000011 01101111 01101110 01101110 01100101 01100011 01110100 01101001 01101111 01101110 00111010 00110001 00110101 00110110 00100000 01100110 01110101 01101110 01100011 01110100 01101001 01101111 01101110 00100000 01110011 01100101 01101110 01100100 00001010 01010010 01100101 01110000 01101100 01101001 01100011 01100001 01110100 01100101 01100100 01010011 01110100 01101111 01110010 01100001 01100111 01100101 00101110 01010110 01101001 01101110 01101110 01111001 01000110 01110010 01100001 01101101 01100101 01110111 01101111 01110010 01101011 00101110 01001100 01101001 01100010 01110010 01100001 01110010 01111001 00101110 01000011 01101100 01101001 01100101 01101110 01110100 00101110 01010000 01110101 01101110 01100011 01101000 01010011 01100101 01110100 01110101 01110000 00111010 00110011 00111001 00001010",
+                "System",
+                "Click",
+                "Run"
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("\207\155\207\157\206\182\206\183\206\179\206\182\206\182\207\157\206\178"):WaitForChild("\208\147\208\168\208\130\208\131\208\130\208\148\208\168\208\146\208\148\208\150"):FireServer(unpack(args))
+          
+    end
+end)

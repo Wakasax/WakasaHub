@@ -16,21 +16,30 @@
 
     local ClickRemote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):FindFirstChild("Click") -- ajuste conforme o jogo
 
-Tabs.Main:AddToggle("AutoClickToggle", {
-    Title = "Auto Click",
-    Default = false,
-    Callback = function(state)
-        if state then
-            task.spawn(function()
-                while Tabs.Main.Toggles.AutoClickToggle.Value do
-                    if ClickRemote then
-                        pcall(function()
-                            ClickRemote:FireServer()
-                        end)
-                    end
-                    task.wait(0.1) -- ESSENCIAL para não travar
+    local autoClickEnabled = false
+
+    local function startAutoClick()
+        task.spawn(function()
+            while autoClickEnabled do
+                local ClickRemote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):FindFirstChild("Click")
+                if ClickRemote then
+                    pcall(function()
+                        ClickRemote:FireServer()
+                    end)
                 end
-            end)
-        end
+                task.wait(0.1) -- evita travar o jogo
+            end
+        end)
     end
-})
+    
+    Main:AddToggle({
+        Name = "AutoClick",
+        Default = false,
+        Callback = function(state)
+            autoClickEnabled = state
+            if autoClickEnabled then
+                startAutoClick()
+            end
+        end
+    })
+    

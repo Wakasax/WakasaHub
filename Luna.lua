@@ -14,24 +14,12 @@
         MinimizeKey = Enum.KeyCode.LeftControl
     })
 
-    local ClickRemote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):FindFirstChild("Click") -- ajuste conforme o jogo
+    local Tabs = {
+        Main = Window:AddTab({ Title = "• farm", Icon = "rbxassetid://18831448204" }),
+        Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
+    }
+    Window:SelectTab(1)
 
-    local autoClickEnabled = false
-
-    local function startAutoClick()
-        task.spawn(function()
-            while autoClickEnabled do
-                local ClickRemote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):FindFirstChild("Click")
-                if ClickRemote then
-                    pcall(function()
-                        ClickRemote:FireServer()
-                    end)
-                end
-                task.wait(0.1) -- evita travar o jogo
-            end
-        end)
-    end
-    
     Main:AddToggle({
         Name = "AutoClick",
         Default = false,
@@ -42,4 +30,3 @@
             end
         end
     })
-    

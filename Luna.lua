@@ -21,13 +21,13 @@ local Tabs = {
 Window:SelectTab(1)
 
 local autoClickEnabled = false
-
+local autoClickTask = nil
 
 local function startAutoClick()
-    task.spawn(function()
+    autoClickTask = task.spawn(function()
+        local vim = game:GetService("VirtualInputManager")
         while autoClickEnabled do
             pcall(function()
-                local vim = game:GetService("VirtualInputManager")
                 vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
                 vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
             end)
@@ -36,17 +36,27 @@ local function startAutoClick()
     end)
 end
 
---exemplo de toggle
-local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
+local Main = Window:MakeTab({
+    Name = "Luna",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-attack:OnChanged(function()
-    while attack.Value do
-        --velocidade do remote em segundos
-        wait(1)
-        --remote
-        startAutoClick()
+Main:AddSection({
+    Name = "Auto-farm"
+})
+
+Main:AddToggle({
+    Name = "AutoClick",
+    Default = false,
+    Callback = function(state)
+        autoClickEnabled = state
+        if autoClickEnabled then
+            startAutoClick()
+        end
     end
-end)
+})
+
 
 
 --settings do fluent

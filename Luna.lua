@@ -21,13 +21,12 @@
     Window:SelectTab(1)
 
     local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
-
+    
     attack:OnChanged(function()
         while attack.Value do
+            --velocidade do remote em segundos
             wait(1)
-            autoClickEnabled = state
-            if autoClickEnabled then
-                startAutoClick()
-            end
+            --remote
+            startAutoClick()
         end
     end)

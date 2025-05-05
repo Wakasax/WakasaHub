@@ -20,19 +20,15 @@
     }
     Window:SelectTab(1)
 
-    local click = Tabs.Main:AddToggle("Auto click", {Title = "Auto click", Default = false})
+    local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
 
-    click:OnChanged(function()
-        while click.Value do
-            if state then
-                task.spawn(function()
-                    while Tabs.Main.Toggles.AutoClickToggle.Value do
-                        if ClickRemote then
-                            ClickRemote:FireServer()
-                        end
-                        task.wait(0.1)
-                    end
+    attack.spawn(function()
+        while Tabs.Main.Toggles.AutoClickToggle.Value do
+            if ClickRemote then
+                pcall(function()
+                    ClickRemote:FireServer()
                 end)
             end
-    end
-end)
+            task.wait(0.1)
+        end
+    end)

@@ -14,21 +14,23 @@
         MinimizeKey = Enum.KeyCode.LeftControl
     })
 
-    local Tabs = {
-        Main = Window:AddTab({ Title = "• Infor", Icon = "rbxassetid://18831448204" }),
-        Settings = Window:AddTab({ Title = "• Settings", Icon = "rbxassetid://18319394996" })
-    }
-    Window:SelectTab(1)
+    local ClickRemote = game:GetService("ReplicatedStorage"):WaitForChild("Events"):FindFirstChild("Click") -- ajuste conforme o jogo
 
-    local attack = Tabs.Main:AddToggle("Auto attack", {Title = "Auto attack", Default = false})
-
-    attack.spawn(function()
-        while Tabs.Main.Toggles.AutoClickToggle.Value do
-            if ClickRemote then
-                pcall(function()
-                    ClickRemote:FireServer()
-                end)
-            end
-            task.wait(0.1)
+Tabs.Main:AddToggle("AutoClickToggle", {
+    Title = "Auto Click",
+    Default = false,
+    Callback = function(state)
+        if state then
+            task.spawn(function()
+                while Tabs.Main.Toggles.AutoClickToggle.Value do
+                    if ClickRemote then
+                        pcall(function()
+                            ClickRemote:FireServer()
+                        end)
+                    end
+                    task.wait(0.1) -- ESSENCIAL para não travar
+                end
+            end)
         end
-    end)
+    end
+})

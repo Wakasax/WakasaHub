@@ -1,31 +1,44 @@
-local HttpService = game:GetService("HttpService")
+-- Luna Hub by Wakasa
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Dex-UI-Library/main/main.lua"))() -- Substitua por uma biblioteca de UI válida
+local Window = Library:CreateWindow("Luna Hub - By Wakasa")
 
-local apiKey = "83e813ede7d1997b8c6e6ff5c5d02ac6acd88f445bb718e30b95dac1f9241480"
-local apiUrl = "https://api.pandadevelopment.net/api/key/fetch"  -- Endpoint para buscar a chave
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
 
--- Função para verificar a chave
-local function verificarChave(chave)
-    local resposta
-    local sucesso, erro = pcall(function()
-        resposta = HttpService:GetAsync(apiUrl .. "?apiKey=" .. chave .. "&fetch=" .. chave)
-    end)
-    
-    if sucesso then
-        local data = HttpService:JSONDecode(resposta)
-        if data.key and data.key.value == chave then
-            return true  -- Chave válida
-        else
-            return false  -- Chave inválida ou não encontrada
-        end
+-- Variáveis de controle
+local noclipEnabled = false
+local noclipConnection = nil
+local autoKillEnabled = false
+
+-- Função de Noclip
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    if noclipEnabled then
+        print("Noclip Ativado! - Luna Hub by Wakasa")
+        noclipConnection = RunService.Stepped:Connect(function()
+            if LocalPlayer.Character then
+                for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
     else
-        warn("Erro ao verificar chave: " .. erro)
-        return false  -- Erro na requisição
+        print("Noclip Desativado! - Luna Hub by Wakasa")
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        if LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
     end
-end
-
--- Chamada para verificar a chave
-if verificarChave(apiKey) then
-    print("Chave válida!")
-else
-    print("Chave inválida ou erro na verificação!")
 end

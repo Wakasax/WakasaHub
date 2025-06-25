@@ -11,7 +11,6 @@ local LocalPlayer = Players.LocalPlayer
 -- Variáveis de controle
 local noclipEnabled = false
 local noclipConnection = nil
-local autoKillEnabled = false
 
 -- Função de Noclip
 local function toggleNoclip()

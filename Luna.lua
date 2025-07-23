@@ -18,7 +18,8 @@ local function getNearbyNpcs(radius)
     local character = player.Character or player.CharacterAdded:Wait()
     local root = character:FindFirstChild("HumanoidRootPart")
     if not root then return {} end
-    for _, npc in pairs(workspace.NPCs:GetChildren()) do
+    -- Caminho atualizado para workspace.Npc.OnePiece
+    for _, npc in pairs(workspace.Npc.OnePiece:GetChildren()) do
         if npc:FindFirstChild("HumanoidRootPart") then
             local dist = (npc.HumanoidRootPart.Position - root.Position).magnitude
             if dist <= radius then

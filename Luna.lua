@@ -12,8 +12,6 @@ local selectedNPC = nil
 local autoFarmActive = false
 local npcDropdown
 
-local VirtualUser = game:GetService("VirtualUser")
-
 local function getNearbyNpcs(radius)
     local npcs = {}
     local player = game.Players.LocalPlayer
@@ -50,17 +48,14 @@ local function teleportToNPC(npc)
     end
 end
 
-local function autoClick()
-    VirtualUser:Button1Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-    wait()
-    VirtualUser:Button1Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-end
-
 local function autofarmLoop()
     while autoFarmActive and selectedNPC and selectedNPC.Parent do
         teleportToNPC(selectedNPC)
-        wait(0.2)
-        autoClick()
+        local args = {
+            "GainStrength",
+            {}
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Input"):FireServer(unpack(args))
         wait(0.2)
     end
 end

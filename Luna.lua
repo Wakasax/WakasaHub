@@ -88,3 +88,4 @@ Main:AddToggle({
 })
 
 reloadNpcList()
+OrionLib:Init()

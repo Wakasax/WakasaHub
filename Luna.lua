@@ -12,13 +12,14 @@ local selectedNPC = nil
 local autoFarmActive = false
 local npcDropdown
 
+local VirtualUser = game:GetService("VirtualUser")
+
 local function getNearbyNpcs(radius)
     local npcs = {}
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local root = character:FindFirstChild("HumanoidRootPart")
     if not root then return {} end
-    -- Caminho atualizado para workspace.Npc.OnePiece
     for _, npc in pairs(workspace.Npc.OnePiece:GetChildren()) do
         if npc:FindFirstChild("HumanoidRootPart") then
             local dist = (npc.HumanoidRootPart.Position - root.Position).magnitude
@@ -41,9 +42,26 @@ local function reloadNpcList()
     end
 end
 
+local function teleportToNPC(npc)
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") and npc:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
+local function autoClick()
+    VirtualUser:Button1Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    wait()
+    VirtualUser:Button1Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end
+
 local function autofarmLoop()
     while autoFarmActive and selectedNPC and selectedNPC.Parent do
-        wait(0.5)
+        teleportToNPC(selectedNPC)
+        wait(0.2)
+        autoClick()
+        wait(0.2)
     end
 end
 

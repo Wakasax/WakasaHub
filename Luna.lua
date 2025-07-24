@@ -19,9 +19,9 @@ local function getNearbyNpcs(radius)
     local root = character:FindFirstChild("HumanoidRootPart")
     if not root then return {} end
     for _, npc in pairs(workspace.Npc.OnePiece:GetChildren()) do
-        if npc:FindFirstChild("HumanoidRootPart") then
+        if npc:FindFirstChild("HumanoidRootPart") and npc:FindFirstChild("Humanoid") then
             local dist = (npc.HumanoidRootPart.Position - root.Position).magnitude
-            if dist <= radius then
+            if dist <= radius and npc.Humanoid.Health > 0 then
                 table.insert(npcs, npc)
             end
         end
@@ -49,14 +49,23 @@ local function teleportToNPC(npc)
 end
 
 local function autofarmLoop()
-    while autoFarmActive and selectedNPC and selectedNPC.Parent do
-        teleportToNPC(selectedNPC)
-        local args = {
-            "GainStrength",
-            {}
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Input"):FireServer(unpack(args))
-        wait(0.2)
+    while autoFarmActive do
+        for _, npc in ipairs(npcList) do
+            if npc and npc.Parent and npc:FindFirstChild("Humanoid") then
+                teleportToNPC(npc)
+                while autoFarmActive and npc.Parent and npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 do
+                    local args = {
+                        "GainStrength",
+                        {}
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Input"):FireServer(unpack(args))
+                    wait(0.2)
+                end
+                wait(0.2) -- Pequeno delay antes de ir pro próximo
+            end
+        end
+        reloadNpcList()
+        wait(0.5)
     end
 end
 

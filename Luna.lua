@@ -12,25 +12,19 @@ local selectedNPC = nil
 local autoFarmActive = false
 local npcDropdown
 
-local function getNearbyNpcs(radius)
+-- Busca TODOS os NPCs vivos na pasta, sem limite de raio
+local function getAllNpcs()
     local npcs = {}
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local root = character:FindFirstChild("HumanoidRootPart")
-    if not root then return {} end
     for _, npc in pairs(workspace.Npc.OnePiece:GetChildren()) do
-        if npc:FindFirstChild("HumanoidRootPart") and npc:FindFirstChild("Humanoid") then
-            local dist = (npc.HumanoidRootPart.Position - root.Position).magnitude
-            if dist <= radius and npc.Humanoid.Health > 0 then
-                table.insert(npcs, npc)
-            end
+        if npc:FindFirstChild("HumanoidRootPart") and npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
+            table.insert(npcs, npc)
         end
     end
     return npcs
 end
 
 local function reloadNpcList()
-    npcList = getNearbyNpcs(50)
+    npcList = getAllNpcs()
     local names = {}
     for _, npc in ipairs(npcList) do
         table.insert(names, npc.Name)
@@ -51,7 +45,7 @@ end
 local function autofarmLoop()
     while autoFarmActive do
         for _, npc in ipairs(npcList) do
-            if npc and npc.Parent and npc:FindFirstChild("Humanoid") then
+            if npc and npc.Parent and npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
                 teleportToNPC(npc)
                 while autoFarmActive and npc.Parent and npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 do
                     local args = {
@@ -61,7 +55,7 @@ local function autofarmLoop()
                     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Input"):FireServer(unpack(args))
                     wait(0.2)
                 end
-                wait(0.2) -- Pequeno delay antes de ir pro próximo
+                wait(0.2)
             end
         end
         reloadNpcList()

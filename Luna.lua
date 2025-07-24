@@ -104,5 +104,28 @@ Main:AddToggle({
     end
 })
 
+-- INF SPIN EGG SYSTEM (OnePiece)
+local infSpinEgg = false
+
+Main:AddToggle({
+    Name = "Inf Spin Egg (OnePiece)",
+    Default = false,
+    Callback = function(state)
+        infSpinEgg = state
+        if state then
+            spawn(function()
+                while infSpinEgg do
+                    local args = {
+                        "Hatch",
+                        "OnePiece"
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):WaitForChild("EggHatch"):InvokeServer(unpack(args))
+                    wait(0.05) -- turbo!
+                end
+            end)
+        end
+    end
+})
+
 reloadNpcList()
 OrionLib:Init()

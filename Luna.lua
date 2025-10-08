@@ -1,100 +1,58 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+function getPlayersName()
+    for i, v in pairs(game:GetChildren()) do
+        if v.ClassName == "Players" then
+            return v.Name
+        end
+    end
+end
 
-local Window = OrionLib:MakeWindow({
-    Name = "AutoFarm Hub",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "AutoFarmConfig",
-    IntroText = "by Wakasax"
-})
+local players = getPlayersName()
 
-local autoSellEnabled = false
-local autoSwingEnabled = false
+local localPlayer = game[players].LocalPlayer
 
--- Main Tab
-local MainTab = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-MainTab:AddToggle({
-    Name = "Auto Sell",
-    Default = false,
-    Callback = function(Value)
-        autoSellEnabled = Value
-        OrionLib:MakeNotification({
-            Name = "Auto Sell",
-            Content = Value and "Enabled" or "Disabled",
-            Image = "rbxassetid://4483345998",
-            Time = 3
-        })
-    end    
-})
-
-MainTab:AddToggle({
-    Name = "Auto Swing",
-    Default = false,
-    Callback = function(Value)
-        autoSwingEnabled = Value
-        OrionLib:MakeNotification({
-            Name = "Auto Swing",
-            Content = Value and "Enabled" or "Disabled",
-            Image = "rbxassetid://4483345998",
-            Time = 3
-        })
-    end    
-})
-
--- Settings Tab
-local SettingsTab = Window:MakeTab({
-    Name = "Settings",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-SettingsTab:AddButton({
-    Name = "Destroy UI",
-    Callback = function()
-        OrionLib:Destroy()
-    end    
-})
-
--- Auto Sell Loop
-task.spawn(function()
-    while true do
-        task.wait(0.1)
-        if autoSellEnabled then
-            local player = game:GetService("Players").LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local root = character:FindFirstChild("HumanoidRootPart")
-            local sellArea = workspace:FindFirstChild("sellAreaCircles")
-            if root and sellArea then
-                for _, area in pairs(sellArea:GetChildren()) do
-                    local inner = area:FindFirstChild("circleInner")
-                    if inner and inner:FindFirstChild("TouchInterest") then
-                        firetouchinterest(root, inner, 0)
-                        task.wait(0.1)
-                        firetouchinterest(root, inner, 1)
+coroutine.resume(coroutine.create(function()
+    while wait(1) do
+        coroutine.resume(coroutine.create(function()
+            for _, v in pairs(game[players]:GetPlayers()) do
+                if v.Name ~= localPlayer.Name and v.Character then
+                    local parts = {
+                        "RightUpperLeg",
+                        "LeftUpperLeg",
+                        "HeadHB",
+                        "HumanoidRootPart"
+                    }
+                    for _, partName in ipairs(parts) do
+                        local part = v.Character[partName]
+                        if part then
+                            part.Transparency = 10
+                        end
                     end
                 end
             end
-        end
+        end))
     end
-end)
+end))
 
--- Auto Swing Loop
-task.spawn(function()
-    while true do
-        task.wait(0.1)
-        if autoSwingEnabled then
-            local player = game:GetService("Players").LocalPlayer
-            local ninjaEvent = player:FindFirstChild("ninjaEvent")
-            if ninjaEvent then
-                ninjaEvent:FireServer("swingKatana")
+coroutine.resume(coroutine.create(function()
+    while wait(1) do
+        coroutine.resume(coroutine.create(function()
+            for _, v in pairs(game[players]:GetPlayers()) do
+                if v.Name ~= localPlayer.Name and v.Character then
+                    local parts = {
+                        "RightUpperLeg",
+                        "LeftUpperLeg",
+                        "HeadHB",
+                        "HumanoidRootPart"
+                    }
+                    for _, partName in ipairs(parts) do
+                        local part = v.Character[partName]
+                        if part then
+                            part.CanCollide = false
+                            part.Size = Vector3.new(13, 13, 13)
+                        end
+                    end
+                end
             end
-        end
+        end))
     end
-end)
-
-OrionLib:Init()
+end))
